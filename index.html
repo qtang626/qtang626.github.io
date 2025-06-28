@@ -1,86 +1,119 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
-    <title>Home - The Flight Diary of Love</title>
-    <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic">
-    <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Tune Drop</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts - Inter for general text -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts - Pacifico for handwritten style title -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #e0f2fe; /* Light blue background for a fresh feel */
+        }
+        .container {
+            max-width: 800px;
+        }
+        /* Custom style for the handwritten font title */
+        .handwritten-font {
+            font-family: 'Pacifico', cursive;
+        }
+        /* Style for the banner background */
+        .banner-background {
+            background: linear-gradient(to bottom, #A7D9EE, #0056B3); /* Gradient matching the previous image aesthetic */
+        }
+    </style>
 </head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 md:p-8">
+    <div class="container bg-white shadow-lg rounded-2xl p-6 sm:p-8 md:p-10 lg:p-12 mb-8 border border-blue-200">
+        <!-- Main Header with flexible layout for logo and contact -->
+        <header class="flex justify-between items-center pb-4 mb-8 border-b border-blue-200">
+            <!-- "Daily Tune Drop" on the left, smaller font with handwritten style -->
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-blue-700 tracking-tight handwritten-font">
+                Daily Tune Drop
+            </h1>
+            <!-- "Contact Us" on the right -->
+            <a href="contact.html" class="text-blue-600 hover:text-blue-800 font-medium text-base sm:text-lg rounded-full px-4 py-2 transition duration-300 ease-in-out">
+                Contact Us
+            </a>
+        </header>
 
-<body>
-    <nav class="navbar navbar-light navbar-expand-lg fixed-top" id="mainNav">
-        <div class="container"><a class="navbar-brand" href="index.html" style="font-size: 30px;color: rgb(255,176,176);">Daily Tune Drop</a><button data-toggle="collapse" data-target="#navbarResponsive" class="navbar-toggler" aria-controls="navbarResponsive" aria-expanded="false"
-                aria-label="Toggle navigation"><i class="fa fa-bars"></i></button>
-            <div class="collapse navbar-collapse" id="navbarResponsive">
-                <ul class="nav navbar-nav ml-auto">
-                    <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="about.html">About us</a></li>
-                    <li class="nav-item"><a class="nav-link" href="contact.html">Contact us</a></li>
-                    <li class="nav-item"></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <header class="masthead" style="background-image:url('assets/img/home-bg.jpg');">
-        <div class="overlay"></div>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-10 col-lg-8 mx-auto">
-                    <div class="site-heading">
-                        <h1 style="font-size: 37px;color: rgb(42,34,34);">The flight Diary of Love</h1><span class="subheading" style="color: rgb(25,24,24);">&nbsp; by Jay Chou</span></div>
+        <!-- Song Banner Section -->
+        <section class="mb-8 text-center">
+            <div class="relative w-full rounded-xl overflow-hidden shadow-md mb-4 banner-background" style="height: 250px;">
+                <!-- Using a div for background instead of an image to avoid unwanted text from placeholder services -->
+                <!-- flexbox properties changed to center content horizontally and vertically -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <div class="text-white translate-y-8"> <!-- Added translate-y-8 to move it down -->
+                        <!-- Song title and artist overlaid on the background div -->
+                        <h2 class="text-3xl sm:text-4xl font-bold mb-1">The Flight Diary of Love</h2>
+                        <p class="text-lg sm:text-xl font-medium text-blue-200">Jay Chou</p>
+                    </div>
                 </div>
             </div>
-        </div>
-    </header>
-    <div class="container">
-        <div class="row" style="height: 1800px;">
-            <div class="col-md-10 col-lg-8 offset-lg-1">
-                <div class="post-preview">
-                    <hr>
-                    <a href="#">
-                        <h2 class="post-title" style="color: rgb(114,92,122);"> Verse</h2>
-                        <h3 class="post-subtitle" style="width: 650px;height: 850px;color: rgb(38,41,44);font-size: 21px;padding: 30px;margin: 0px;">At the edge of the equator, skies are clear and blue,<br><br>A thousand times I’ve said, “I love you” — each echo felt like new.<br><br>Hills by the shore, rugged and steep,<br><br>Waves crash loud, but your voice I keep.<br>I
-                            froze our love in Antarctic ice,<br><br>A crystal vow that won't melt twice.<br><br>My heart won't change, it’s set so true —<br><br>This choice I made, to cherish you.<br>So clear (so clear), so strong (so strong),<br><br>We
-                            rise against where weights belong.<br><br>The fading view behind our flight,<br><br>Each scene, each shade, now sharp and bright.<br>I spark my engine, leave dawn behind,<br><br>Just speed remains in love’s design.<br><br>Nearer
-                            the stars, through galaxy’s stream,<br><br>I make my wish with steady gleam.</h3>
-                    </a>
-                </div>
-                <h2 class="post-title" style="color: rgb(114,92,122);font-size: 36px;"></h2>
-                <div class="post-preview"><a href="#"></a>
-                    <hr>
-                    <a href="#">
-                        <h2 class="post-title" style="color: rgb(114,92,122);">Chorus</h2>
-                        <h3 class="post-subtitle" style="font-size: 21px;width: 650px;height: 450px;margin: 0px;padding: 30px;color: rgb(38,41,44);">I fly for love, escaping gravity’s hold,<br><br>To find a star and name it for you in gold.<br><br>Across the light-years, my feelings stay true,<br><br>A silent journey — just to reach you.<br>I fly for love, defying the earthbound
-                            chain,<br><br>In the weightless void, where there’s no pain.<br><br>Through endless space so vast and wide,<br><br>I arrive for you, from the other side.<br><br></h3>
-                    </a>
-                    <p class="post-meta">Posted by&nbsp;<a href="#">Daily Tune Drop on June 28, 2025</a></p>
-                </div>
-                <hr>
-                <div class="clearfix"><button class="btn btn-primary float-right" type="button">Listen now ⇒</button></div>
+        </section>
+
+        <!-- Lyrics Section -->
+        <section class="text-gray-800 text-base sm:text-lg leading-relaxed">
+            <h3 class="text-2xl sm:text-3xl font-semibold text-blue-600 mb-4 text-center">Lyrics</h3>
+
+            <!-- Verse -->
+            <div class="mb-6 bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100">
+                <p class="mb-2">At the edge of the equator, skies are clear and blue,</p>
+                <p class="mb-2">A thousand times I’ve said, “I love you” — each echo felt like new.</p>
+                <p class="mb-2">Hills by the shore, rugged and steep,</p>
+                <p class="mb-4">Waves crash loud, but your voice I keep.</p>
+
+                <p class="mb-2">I froze our love in Antarctic ice,</p>
+                <p class="mb-2">A crystal vow that won't melt twice.</p>
+                <p class="mb-2">My heart won't change, it’s set so true —</p>
+                <p class="mb-4">This choice I made, to cherish you.</p>
+
+                <p class="mb-2">(So clear) so clear, (so strong) so strong,</p>
+                <p class="mb-2">We rise against where weights belong.</p>
+                <p class="mb-2">The fading view behind our flight,</p>
+                <p class="mb-4">Each scene, each shade, now sharp and bright.</p>
+
+                <p class="mb-2">I spark my engine, leave dawn behind,</p>
+                <p class="mb-2">Just speed remains in love’s design.</p>
+                <p class="mb-2">Nearer the stars, through galaxy’s stream,</p>
+                <p>I make my wish with steady gleam.</p>
             </div>
-        </div>
+
+            <!-- Chorus -->
+            <div class="mb-6 bg-blue-100 p-4 rounded-lg shadow-sm border border-blue-200">
+                <p class="mb-2 font-bold text-blue-700">Chorus:</p>
+                <p class="mb-2">I fly for love, escaping gravity’s hold,</p>
+                <p class="mb-2">To find a star and name it for you in gold.</p>
+                <p class="mb-2">Across the light-years, my feelings stay true,</p>
+                <p class="mb-4">A silent journey — just to reach you.</p>
+
+                <p class="mb-2">I fly for love, defying the earthbound chain,</p>
+                <p class="mb-2">In the weightless void, where there’s no pain.</p>
+                <p class="mb-2">Through endless space so vast and wide,</p>
+                <p>I arrive for you, from the other side.</p>
+            </div>
+
+            <!-- Publication Date moved here -->
+            <p class="text-sm text-gray-600 mt-6 text-center">Published: June 28, 2025</p>
+
+            <!-- Listen Now Button -->
+            <div class="text-center mt-6">
+                <a href="https://www.youtube.com/watch?v=odNYK272RtQ" target="_blank"
+                   class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition duration-300 ease-in-out hover:scale-105">
+                    Listen Now
+                </a>
+            </div>
+        </section>
+
+        <!-- Footer (only copyright) -->
+        <footer class="text-center text-gray-500 text-sm mt-8 pt-4 border-t border-blue-200">
+            <p>&copy; Daily Tune Drop</p>
+        </footer>
     </div>
-    <footer>
-        <ul class="list-inline text-center">
-            <li class="list-inline-item"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-twitter fa-stack-1x fa-inverse"></i></span></li>
-            <li class="list-inline-item"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-facebook fa-stack-1x fa-inverse"></i></span></li>
-            <li class="list-inline-item"><span class="fa-stack fa-lg"><i class="fa fa-circle fa-stack-2x"></i><i class="fa fa-github fa-stack-1x fa-inverse"></i></span></li>
-        </ul>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-10 col-lg-8 mx-auto">
-                    <p class="text-muted copyright">Copyright&nbsp;© Daily Tune Drop 2025</p>
-                </div>
-            </div>
-        </div>
-    </footer>
-    <script src="assets/js/jquery.min.js"></script>
-    <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/clean-blog.js"></script>
 </body>
-
 </html>
