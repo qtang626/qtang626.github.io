@@ -10,48 +10,113 @@
             flex-direction: column;
             align-items: center;
             font-family: Arial, sans-serif;
-            margin-top: 20px;
+            margin: 0;
+            padding: 0;
             background-color: #f4f4f4;
+            min-height: 100vh;
         }
+
+        #main-container {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
+            box-sizing: border-box;
+            align-items: flex-start;
+        }
+
+        #header {
+            width: 100%;
+            text-align: left;
+            margin-bottom: 20px;
+            padding-left: 20px;
+            box-sizing: border-box;
+        }
+
+        #header h1 {
+            margin: 0;
+            font-size: 2em;
+            color: #333;
+        }
+
+        #board-and-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
         #board-container {
             position: relative;
-            width: 456px; /* 19 * 24px + 2 * 20px (padding) */
-            height: 456px;
+            /* 棋盘尺寸增大，这里调整了宽度和高度 */
+            width: 600px;
+            height: 600px;
             background-color: #d1b48c; /* 棋盘木色 */
             border: 2px solid #333;
             box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
         }
+
         canvas {
             position: absolute;
             top: 0;
             left: 0;
         }
+
+        #status {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #555;
+        }
+
         #controls {
             margin-top: 20px;
+            display: flex;
+            justify-content: center;
         }
+
         button {
             padding: 10px 20px;
             font-size: 16px;
-            margin: 0 5px;
+            margin: 0 10px;
             cursor: pointer;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            border-radius: 5px;
+            transition: background-color 0.2s;
         }
-        #status {
-            margin-top: 10px;
-            font-size: 18px;
-            font-weight: bold;
+
+        button:hover {
+            background-color: #eee;
+        }
+
+        /* 棋子样式 */
+        .black-stone {
+            background-color: #000;
+        }
+
+        .white-stone {
+            background-color: #fff;
+            border: 1px solid #333;
         }
     </style>
 </head>
 <body>
 
-    <h1>围棋打谱</h1>
-    <div id="status">当前执子：黑子</div>
-    <div id="board-container">
-        <canvas id="goBoard" width="456" height="456"></canvas>
-    </div>
-    <div id="controls">
-        <button id="confirmBtn">确认并保存</button>
-        <button id="resignBtn">投子认负</button>
+    <div id="main-container">
+        <div id="header">
+            <h1>围棋打谱</h1>
+        </div>
+        <div id="board-and-controls">
+            <div id="board-container">
+                <canvas id="goBoard" width="600" height="600"></canvas>
+            </div>
+            <div id="status">当前执子：黑子</div>
+            <div id="controls">
+                <button id="confirmBtn">确认并保存</button>
+                <button id="resignBtn">投子认负</button>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -62,30 +127,28 @@
         const resignBtn = document.getElementById('resignBtn');
 
         const GRID_SIZE = 19;
-        const CELL_SIZE = 24;
-        const PADDING = 20;
+        // 调整了棋盘的单元格大小以适应更大的棋盘
+        const CELL_SIZE = 30;
+        const PADDING = 15;
 
         let boardState = [];
         let currentPlayer = 'black';
-        let lastMove = null; // 用于存储未确认的落子坐标 [x, y]
+        let lastMove = null;
 
         function saveBoard() {
             if (!lastMove) {
-                console.log('没有新的落子需要保存。');
                 return;
             }
-            // 将未确认的落子正式写入棋盘状态
             const [x, y] = lastMove;
             boardState[y][x] = currentPlayer;
             localStorage.setItem('goBoardState', JSON.stringify(boardState));
-            
+
             currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
             localStorage.setItem('goCurrentPlayer', currentPlayer);
-            
-            lastMove = null; // 确认保存后，清空未确认的落子
+
+            lastMove = null;
             updateStatus();
             drawBoard();
-            console.log('棋局已保存，并切换到下一位玩家。');
         }
 
         function loadBoard() {
@@ -105,6 +168,7 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             ctx.strokeStyle = '#333';
             ctx.lineWidth = 1;
+
             for (let i = 0; i < GRID_SIZE; i++) {
                 ctx.beginPath();
                 ctx.moveTo(PADDING + i * CELL_SIZE, PADDING);
@@ -115,6 +179,7 @@
                 ctx.lineTo(canvas.width - PADDING, PADDING + i * CELL_SIZE);
                 ctx.stroke();
             }
+
             const starPoints = [[3, 3], [3, 9], [3, 15], [9, 3], [9, 9], [9, 15], [15, 3], [15, 9], [15, 15]];
             ctx.fillStyle = '#333';
             starPoints.forEach(([x, y]) => {
@@ -123,7 +188,6 @@
                 ctx.fill();
             });
 
-            // 绘制所有已确认的棋子
             for (let y = 0; y < GRID_SIZE; y++) {
                 for (let x = 0; x < GRID_SIZE; x++) {
                     const stone = boardState[y][x];
@@ -139,7 +203,6 @@
                 }
             }
 
-            // 绘制未确认的临时棋子，使用半透明效果或高亮
             if (lastMove) {
                 const [x, y] = lastMove;
                 ctx.beginPath();
@@ -161,10 +224,9 @@
             const y = Math.round((mouseY - PADDING) / CELL_SIZE);
 
             if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE) {
-                // 如果该位置为空，则更新未确认的落子
                 if (boardState[y][x] === null) {
                     lastMove = [x, y];
-                    drawBoard(); // 重新绘制以显示临时棋子
+                    drawBoard();
                 }
             }
         }
@@ -178,7 +240,7 @@
             currentPlayer = 'black';
             lastMove = null;
             drawBoard();
-            saveBoard(); // 保存空状态
+            saveBoard();
             updateStatus();
         }
 
