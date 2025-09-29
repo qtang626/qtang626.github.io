@@ -1,119 +1,171 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily Tune Drop</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Google Fonts - Inter for general text -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <!-- Google Fonts - Pacifico for handwritten style title -->
-    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <title>围棋打谱</title>
     <style>
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: #e0f2fe; /* Light blue background for a fresh feel */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            margin-top: 20px;
+            background-color: #f4f4f4;
         }
-        .container {
-            max-width: 800px;
+        #board-container {
+            position: relative;
+            width: 456px; /* 19 * 24px + 2 * 20px (padding) */
+            height: 456px;
+            background-color: #d1b48c; /* 棋盘木色 */
+            border: 2px solid #333;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
         }
-        /* Custom style for the handwritten font title */
-        .handwritten-font {
-            font-family: 'Pacifico', cursive;
+        canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
         }
-        /* Style for the banner background */
-        .banner-background {
-            background: linear-gradient(to bottom, #A7D9EE, #0056B3); /* Gradient matching the previous image aesthetic */
+        #controls {
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 16px;
+            margin: 0 5px;
+            cursor: pointer;
+        }
+        #status {
+            margin-top: 10px;
+            font-size: 18px;
+            font-weight: bold;
         }
     </style>
 </head>
-<body class="flex flex-col items-center justify-center min-h-screen p-4 sm:p-6 md:p-8">
-    <div class="container bg-white shadow-lg rounded-2xl p-6 sm:p-8 md:p-10 lg:p-12 mb-8 border border-blue-200">
-        <!-- Main Header with flexible layout for logo and contact -->
-        <header class="flex justify-between items-center pb-4 mb-8 border-b border-blue-200">
-            <!-- "Daily Tune Drop" on the left, smaller font with handwritten style -->
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-blue-700 tracking-tight handwritten-font">
-                Daily Tune Drop
-            </h1>
-            <!-- "Contact Us" on the right -->
-            <a href="contact.html" class="text-blue-600 hover:text-blue-800 font-medium text-base sm:text-lg rounded-full px-4 py-2 transition duration-300 ease-in-out">
-                Contact Us
-            </a>
-        </header>
+<body>
 
-        <!-- Song Banner Section -->
-        <section class="mb-8 text-center">
-            <div class="relative w-full rounded-xl overflow-hidden shadow-md mb-4 banner-background" style="height: 250px;">
-                <!-- Using a div for background instead of an image to avoid unwanted text from placeholder services -->
-                <!-- flexbox properties changed to center content horizontally and vertically -->
-                <div class="absolute inset-0 flex flex-col items-center justify-center">
-                    <div class="text-white translate-y-8"> <!-- Added translate-y-8 to move it down -->
-                        <!-- Song title and artist overlaid on the background div -->
-                        <h2 class="text-3xl sm:text-4xl font-bold mb-1">The Flight Diary of Love</h2>
-                        <p class="text-lg sm:text-xl font-medium text-blue-200">Jay Chou</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Lyrics Section -->
-        <section class="text-gray-800 text-base sm:text-lg leading-relaxed">
-            <h3 class="text-2xl sm:text-3xl font-semibold text-blue-600 mb-4 text-center">Lyrics</h3>
-
-            <!-- Verse -->
-            <div class="mb-6 bg-blue-50 p-4 rounded-lg shadow-sm border border-blue-100">
-                <p class="mb-2">At the edge of the equator, skies are clear and blue,</p>
-                <p class="mb-2">A thousand times I’ve said, “I love you” — each echo felt like new.</p>
-                <p class="mb-2">Hills by the shore, rugged and steep,</p>
-                <p class="mb-4">Waves crash loud, but your voice I keep.</p>
-
-                <p class="mb-2">I froze our love in Antarctic ice,</p>
-                <p class="mb-2">A crystal vow that won't melt twice.</p>
-                <p class="mb-2">My heart won't change, it’s set so true —</p>
-                <p class="mb-4">This choice I made, to cherish you.</p>
-
-                <p class="mb-2">(So clear) so clear, (so strong) so strong,</p>
-                <p class="mb-2">We rise against where weights belong.</p>
-                <p class="mb-2">The fading view behind our flight,</p>
-                <p class="mb-4">Each scene, each shade, now sharp and bright.</p>
-
-                <p class="mb-2">I spark my engine, leave dawn behind,</p>
-                <p class="mb-2">Just speed remains in love’s design.</p>
-                <p class="mb-2">Nearer the stars, through galaxy’s stream,</p>
-                <p>I make my wish with steady gleam.</p>
-            </div>
-
-            <!-- Chorus -->
-            <div class="mb-6 bg-blue-100 p-4 rounded-lg shadow-sm border border-blue-200">
-                <p class="mb-2 font-bold text-blue-700">Chorus:</p>
-                <p class="mb-2">I fly for love, escaping gravity’s hold,</p>
-                <p class="mb-2">To find a star and name it for you in gold.</p>
-                <p class="mb-2">Across the light-years, my feelings stay true,</p>
-                <p class="mb-4">A silent journey — just to reach you.</p>
-
-                <p class="mb-2">I fly for love, defying the earthbound chain,</p>
-                <p class="mb-2">In the weightless void, where there’s no pain.</p>
-                <p class="mb-2">Through endless space so vast and wide,</p>
-                <p>I arrive for you, from the other side.</p>
-            </div>
-
-            <!-- Publication Date moved here -->
-            <p class="text-sm text-gray-600 mt-6 text-center">Published: June 28, 2025</p>
-
-            <!-- Listen Now Button -->
-            <div class="text-center mt-6">
-                <a href="https://www.youtube.com/watch?v=odNYK272RtQ" target="_blank"
-                   class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transform transition duration-300 ease-in-out hover:scale-105">
-                    Listen Now
-                </a>
-            </div>
-        </section>
-
-        <!-- Footer (only copyright) -->
-        <footer class="text-center text-gray-500 text-sm mt-8 pt-4 border-t border-blue-200">
-            <p>&copy; Daily Tune Drop</p>
-        </footer>
+    <h1>围棋打谱</h1>
+    <div id="status">当前执子：黑子</div>
+    <div id="board-container">
+        <canvas id="goBoard" width="456" height="456"></canvas>
     </div>
+    <div id="controls">
+        <button id="confirmBtn">确认并保存</button>
+        <button id="resignBtn">投子认负</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('goBoard');
+        const ctx = canvas.getContext('2d');
+        const statusDiv = document.getElementById('status');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const resignBtn = document.getElementById('resignBtn');
+
+        const GRID_SIZE = 19;
+        const CELL_SIZE = 24;
+        const PADDING = 20;
+
+        let boardState = []; // 存储棋盘状态
+        let currentPlayer = 'black'; // 'black' or 'white'
+
+        function saveBoard() {
+            localStorage.setItem('goBoardState', JSON.stringify(boardState));
+            localStorage.setItem('goCurrentPlayer', currentPlayer);
+            console.log('棋局已保存。');
+        }
+
+        function loadBoard() {
+            const savedState = localStorage.getItem('goBoardState');
+            const savedPlayer = localStorage.getItem('goCurrentPlayer');
+            if (savedState) {
+                boardState = JSON.parse(savedState);
+                currentPlayer = savedPlayer || 'black';
+            } else {
+                boardState = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null));
+            }
+            updateStatus();
+            drawBoard();
+        }
+
+        function drawBoard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw grid lines
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
+            for (let i = 0; i < GRID_SIZE; i++) {
+                ctx.beginPath();
+                ctx.moveTo(PADDING + i * CELL_SIZE, PADDING);
+                ctx.lineTo(PADDING + i * CELL_SIZE, canvas.height - PADDING);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(PADDING, PADDING + i * CELL_SIZE);
+                ctx.lineTo(canvas.width - PADDING, PADDING + i * CELL_SIZE);
+                ctx.stroke();
+            }
+
+            // Draw star points (星)
+            const starPoints = [[3, 3], [3, 9], [3, 15], [9, 3], [9, 9], [9, 15], [15, 3], [15, 9], [15, 15]];
+            ctx.fillStyle = '#333';
+            starPoints.forEach(([x, y]) => {
+                ctx.beginPath();
+                ctx.arc(PADDING + x * CELL_SIZE, PADDING + y * CELL_SIZE, 3, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+
+            // Draw stones
+            for (let y = 0; y < GRID_SIZE; y++) {
+                for (let x = 0; x < GRID_SIZE; x++) {
+                    const stone = boardState[y][x];
+                    if (stone) {
+                        ctx.beginPath();
+                        ctx.arc(PADDING + x * CELL_SIZE, PADDING + y * CELL_SIZE, CELL_SIZE / 2 - 2, 0, 2 * Math.PI);
+                        ctx.fillStyle = stone === 'black' ? '#000' : '#fff';
+                        ctx.fill();
+                        ctx.strokeStyle = '#333';
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function handleBoardClick(event) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left;
+            const mouseY = event.clientY - rect.top;
+
+            const x = Math.round((mouseX - PADDING) / CELL_SIZE);
+            const y = Math.round((mouseY - PADDING) / CELL_SIZE);
+
+            if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE && boardState[y][x] === null) {
+                boardState[y][x] = currentPlayer;
+                currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
+                drawBoard();
+                updateStatus();
+            }
+        }
+
+        function updateStatus() {
+            statusDiv.textContent = `当前执子：${currentPlayer === 'black' ? '黑子' : '白子'}`;
+        }
+
+        function resetBoard() {
+            boardState = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null));
+            currentPlayer = 'black';
+            drawBoard();
+            saveBoard(); // Save the empty state
+            updateStatus();
+        }
+
+        canvas.addEventListener('click', handleBoardClick);
+        confirmBtn.addEventListener('click', saveBoard); // 确认后才保存
+        resignBtn.addEventListener('click', resetBoard); // 投子认负就是清空
+
+        // Initial load
+        window.onload = loadBoard;
+    </script>
+
 </body>
 </html>
