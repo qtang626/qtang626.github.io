@@ -41,9 +41,9 @@
 
         #board-container {
             position: relative;
-            /* 调整棋盘尺寸 */
-            width: 700px;
-            height: 700px;
+            /* 最终版棋盘尺寸 */
+            width: 600px;
+            height: 600px;
             background-color: #d1b48c;
             border: 2px solid #333;
             box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
@@ -99,7 +99,7 @@
         </div>
         
         <div id="board-container">
-            <canvas id="goBoard" width="700" height="700"></canvas>
+            <canvas id="goBoard" width="550" height="550"></canvas>
         </div>
         
         <div id="controls-panel">
@@ -119,8 +119,8 @@
         const resignBtn = document.getElementById('resignBtn');
 
         const GRID_SIZE = 19;
-        const CELL_SIZE = 36; // 调整单元格尺寸以适应更大的棋盘
-        const PADDING = 19; // 相应调整边距
+        const CELL_SIZE = 30;
+        const PADDING = 10;
 
         let boardState = [];
         let currentPlayer = 'black';
@@ -162,6 +162,7 @@
             ctx.strokeStyle = '#333';
             ctx.lineWidth = 1;
 
+            // 绘制网格线
             for (let i = 0; i < GRID_SIZE; i++) {
                 ctx.beginPath();
                 ctx.moveTo(PADDING + i * CELL_SIZE, PADDING);
