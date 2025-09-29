@@ -65,13 +65,24 @@
         const CELL_SIZE = 24;
         const PADDING = 20;
 
-        let boardState = []; // 存储棋盘状态
-        let currentPlayer = 'black'; // 'black' or 'white'
+        let boardState = [];
+        let currentPlayer = 'black';
+        let lastMove = null; // 用于存储未确认的落子坐标 [x, y]
 
         function saveBoard() {
+            if (!lastMove) {
+                // 如果没有未确认的落子，则不执行保存操作
+                console.log('没有新的落子需要保存。');
+                return;
+            }
             localStorage.setItem('goBoardState', JSON.stringify(boardState));
+            // 在保存之后，才切换到下一个玩家
+            currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
             localStorage.setItem('goCurrentPlayer', currentPlayer);
-            console.log('棋局已保存。');
+            lastMove = null; // 确认保存后，清空未确认的落子
+            updateStatus();
+            drawBoard();
+            console.log('棋局已保存，并切换到下一位玩家。');
         }
 
         function loadBoard() {
@@ -89,8 +100,6 @@
 
         function drawBoard() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Draw grid lines
             ctx.strokeStyle = '#333';
             ctx.lineWidth = 1;
             for (let i = 0; i < GRID_SIZE; i++) {
@@ -104,8 +113,6 @@
                 ctx.lineTo(canvas.width - PADDING, PADDING + i * CELL_SIZE);
                 ctx.stroke();
             }
-
-            // Draw star points (星)
             const starPoints = [[3, 3], [3, 9], [3, 15], [9, 3], [9, 9], [9, 15], [15, 3], [15, 9], [15, 15]];
             ctx.fillStyle = '#333';
             starPoints.forEach(([x, y]) => {
@@ -114,7 +121,6 @@
                 ctx.fill();
             });
 
-            // Draw stones
             for (let y = 0; y < GRID_SIZE; y++) {
                 for (let x = 0; x < GRID_SIZE; x++) {
                     const stone = boardState[y][x];
@@ -139,11 +145,23 @@
             const x = Math.round((mouseX - PADDING) / CELL_SIZE);
             const y = Math.round((mouseY - PADDING) / CELL_SIZE);
 
-            if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE && boardState[y][x] === null) {
-                boardState[y][x] = currentPlayer;
-                currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
-                drawBoard();
-                updateStatus();
+            if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE) {
+                // 如果已经有未确认的落子
+                if (lastMove) {
+                    const [lastX, lastY] = lastMove;
+                    // 如果用户点击了其他位置，则忽略
+                    if (x !== lastX || y !== lastY) {
+                        console.log('请先确认当前落子，再下新的棋。');
+                        return;
+                    }
+                }
+                
+                // 如果该位置为空，则落子
+                if (boardState[y][x] === null) {
+                    boardState[y][x] = currentPlayer;
+                    lastMove = [x, y]; // 记录未确认的落子
+                    drawBoard(); // 重新绘制棋盘以显示新落子
+                }
             }
         }
 
@@ -154,16 +172,16 @@
         function resetBoard() {
             boardState = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null));
             currentPlayer = 'black';
+            lastMove = null;
             drawBoard();
-            saveBoard(); // Save the empty state
+            saveBoard(); // 保存空状态
             updateStatus();
         }
 
         canvas.addEventListener('click', handleBoardClick);
-        confirmBtn.addEventListener('click', saveBoard); // 确认后才保存
-        resignBtn.addEventListener('click', resetBoard); // 投子认负就是清空
+        confirmBtn.addEventListener('click', saveBoard);
+        resignBtn.addEventListener('click', resetBoard);
 
-        // Initial load
         window.onload = loadBoard;
     </script>
 
