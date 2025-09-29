@@ -314,8 +314,11 @@
             currentPlayer = 'black';
             lastMove = null;
             tempBoardState = null;
+            
+            // 直接保存空的棋盘状态
+            localStorage.setItem('goBoardState', JSON.stringify(boardState));
+
             drawBoard();
-            saveBoard();
             updateStatus();
         }
 
