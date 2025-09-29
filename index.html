@@ -124,20 +124,22 @@
         let boardState = [];
         let currentPlayer = 'black';
         let lastMove = null;
+        let tempBoardState = null; // 用于临时保存提子后的棋盘状态
 
         function saveBoard() {
             if (!lastMove) {
                 return;
             }
-            const [x, y] = lastMove;
             
-            // 提子逻辑已在落子时执行，这里只负责保存并切换执子方
-            
+            // 将临时状态正式保存
+            boardState = tempBoardState;
             localStorage.setItem('goBoardState', JSON.stringify(boardState));
+            
             currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
             localStorage.setItem('goCurrentPlayer', currentPlayer);
             
             lastMove = null;
+            tempBoardState = null;
             updateStatus();
             drawBoard();
         }
@@ -179,9 +181,12 @@
                 ctx.fill();
             });
 
+            // 根据正式或临时状态绘制棋盘
+            const stateToDraw = tempBoardState || boardState;
+
             for (let y = 0; y < GRID_SIZE; y++) {
                 for (let x = 0; x < GRID_SIZE; x++) {
-                    const stone = boardState[y][x];
+                    const stone = stateToDraw[y][x];
                     if (stone) {
                         ctx.beginPath();
                         ctx.arc(PADDING + x * CELL_SIZE, PADDING + y * CELL_SIZE, CELL_SIZE / 2 - 2, 0, 2 * Math.PI);
@@ -214,21 +219,29 @@
             const x = Math.round((mouseX - PADDING) / CELL_SIZE);
             const y = Math.round((mouseY - PADDING) / CELL_SIZE);
 
-            if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE && boardState[y][x] === null) {
-                // 暂时落子并检查规则
-                boardState[y][x] = currentPlayer;
-                const capturedStones = captureStones(x, y);
+            if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE) {
+                // 如果该位置已被棋子占据，则不作任何处理
+                if (boardState[y][x] !== null) {
+                    return;
+                }
+                
+                // 模拟落子，并检查规则
+                const testBoard = JSON.parse(JSON.stringify(boardState));
+                testBoard[y][x] = currentPlayer;
+                
+                const capturedStones = captureStones(testBoard, x, y);
 
-                if (capturedStones.length === 0 && !hasLiberties(x, y, currentPlayer)) {
-                    // 自杀手，落子非法，移除临时棋子
-                    boardState[y][x] = null;
+                if (capturedStones.length === 0 && !hasLiberties(testBoard, x, y, currentPlayer)) {
                     alert("非法落子！不能下自杀手。");
-                    drawBoard(); // 刷新棋盘
+                    lastMove = null;
+                    tempBoardState = null;
+                    drawBoard();
                     return;
                 }
 
-                // 如果落子合法，设置lastMove，等待确认
+                // 规则验证通过，更新临时状态
                 lastMove = [x, y];
+                tempBoardState = testBoard; // 保存提子后的临时棋盘
                 drawBoard();
             }
         }
@@ -243,7 +256,7 @@
             return neighbors;
         }
 
-        function getGroup(x, y, color, visited) {
+        function getGroup(testBoard, x, y, color, visited) {
             const group = [];
             const stack = [[x, y]];
             visited[y][x] = true;
@@ -254,7 +267,7 @@
                 const neighbors = getNeighbors(curX, curY);
 
                 for (const [nx, ny] of neighbors) {
-                    if (boardState[ny][nx] === color && !visited[ny][nx]) {
+                    if (testBoard[ny][nx] === color && !visited[ny][nx]) {
                         visited[ny][nx] = true;
                         stack.push([nx, ny]);
                     }
@@ -263,14 +276,14 @@
             return group;
         }
         
-        function hasLiberties(x, y, color) {
+        function hasLiberties(testBoard, x, y, color) {
             const visited = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false));
-            const group = getGroup(x, y, color, visited);
+            const group = getGroup(testBoard, x, y, color, visited);
 
             for (const [gx, gy] of group) {
                 const neighbors = getNeighbors(gx, gy);
                 for (const [nx, ny] of neighbors) {
-                    if (boardState[ny][nx] === null) {
+                    if (testBoard[ny][nx] === null) {
                         return true;
                     }
                 }
@@ -278,18 +291,18 @@
             return false;
         }
 
-        function captureStones(x, y) {
+        function captureStones(testBoard, x, y) {
             const captured = [];
-            const opponentColor = currentPlayer === 'black' ? 'white' : 'black';
+            const opponentColor = (testBoard[y][x] === 'black') ? 'white' : 'black';
             const neighbors = getNeighbors(x, y);
 
             for (const [nx, ny] of neighbors) {
-                if (boardState[ny][nx] === opponentColor) {
-                    if (!hasLiberties(nx, ny, opponentColor)) {
+                if (testBoard[ny][nx] === opponentColor) {
+                    if (!hasLiberties(testBoard, nx, ny, opponentColor)) {
                         const visited = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false));
-                        const groupToCapture = getGroup(nx, ny, opponentColor, visited);
+                        const groupToCapture = getGroup(testBoard, nx, ny, opponentColor, visited);
                         for (const [cx, cy] of groupToCapture) {
-                            boardState[cy][cx] = null;
+                            testBoard[cy][cx] = null;
                             captured.push([cx, cy]);
                         }
                     }
@@ -307,6 +320,7 @@
             boardState = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null));
             currentPlayer = 'black';
             lastMove = null;
+            tempBoardState = null;
             drawBoard();
             saveBoard();
             updateStatus();
