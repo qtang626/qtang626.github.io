@@ -71,14 +71,17 @@
 
         function saveBoard() {
             if (!lastMove) {
-                // 如果没有未确认的落子，则不执行保存操作
                 console.log('没有新的落子需要保存。');
                 return;
             }
+            // 将未确认的落子正式写入棋盘状态
+            const [x, y] = lastMove;
+            boardState[y][x] = currentPlayer;
             localStorage.setItem('goBoardState', JSON.stringify(boardState));
-            // 在保存之后，才切换到下一个玩家
+            
             currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
             localStorage.setItem('goCurrentPlayer', currentPlayer);
+            
             lastMove = null; // 确认保存后，清空未确认的落子
             updateStatus();
             drawBoard();
@@ -107,7 +110,6 @@
                 ctx.moveTo(PADDING + i * CELL_SIZE, PADDING);
                 ctx.lineTo(PADDING + i * CELL_SIZE, canvas.height - PADDING);
                 ctx.stroke();
-
                 ctx.beginPath();
                 ctx.moveTo(PADDING, PADDING + i * CELL_SIZE);
                 ctx.lineTo(canvas.width - PADDING, PADDING + i * CELL_SIZE);
@@ -121,6 +123,7 @@
                 ctx.fill();
             });
 
+            // 绘制所有已确认的棋子
             for (let y = 0; y < GRID_SIZE; y++) {
                 for (let x = 0; x < GRID_SIZE; x++) {
                     const stone = boardState[y][x];
@@ -135,6 +138,18 @@
                     }
                 }
             }
+
+            // 绘制未确认的临时棋子，使用半透明效果或高亮
+            if (lastMove) {
+                const [x, y] = lastMove;
+                ctx.beginPath();
+                ctx.arc(PADDING + x * CELL_SIZE, PADDING + y * CELL_SIZE, CELL_SIZE / 2 - 2, 0, 2 * Math.PI);
+                ctx.fillStyle = currentPlayer === 'black' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)';
+                ctx.fill();
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
         }
 
         function handleBoardClick(event) {
@@ -146,21 +161,10 @@
             const y = Math.round((mouseY - PADDING) / CELL_SIZE);
 
             if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE) {
-                // 如果已经有未确认的落子
-                if (lastMove) {
-                    const [lastX, lastY] = lastMove;
-                    // 如果用户点击了其他位置，则忽略
-                    if (x !== lastX || y !== lastY) {
-                        console.log('请先确认当前落子，再下新的棋。');
-                        return;
-                    }
-                }
-                
-                // 如果该位置为空，则落子
+                // 如果该位置为空，则更新未确认的落子
                 if (boardState[y][x] === null) {
-                    boardState[y][x] = currentPlayer;
-                    lastMove = [x, y]; // 记录未确认的落子
-                    drawBoard(); // 重新绘制棋盘以显示新落子
+                    lastMove = [x, y];
+                    drawBoard(); // 重新绘制以显示临时棋子
                 }
             }
         }
