@@ -41,9 +41,9 @@
 
         #board-container {
             position: relative;
-            /* 修正后的棋盘尺寸 */
-            width: 556px;
-            height: 556px;
+            /* 调整棋盘尺寸 */
+            width: 700px;
+            height: 700px;
             background-color: #d1b48c;
             border: 2px solid #333;
             box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
@@ -99,7 +99,7 @@
         </div>
         
         <div id="board-container">
-            <canvas id="goBoard" width="556" height="556"></canvas>
+            <canvas id="goBoard" width="700" height="700"></canvas>
         </div>
         
         <div id="controls-panel">
@@ -119,8 +119,8 @@
         const resignBtn = document.getElementById('resignBtn');
 
         const GRID_SIZE = 19;
-        const CELL_SIZE = 30;
-        const PADDING = 13; // 修正 padding，以保证总尺寸正确
+        const CELL_SIZE = 36; // 调整单元格尺寸以适应更大的棋盘
+        const PADDING = 19; // 相应调整边距
 
         let boardState = [];
         let currentPlayer = 'black';
