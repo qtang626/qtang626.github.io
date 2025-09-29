@@ -131,21 +131,8 @@
             }
             const [x, y] = lastMove;
             
-            // 在正式落子前检查提子
-            const capturedStones = captureStones(x, y);
-
-            if (capturedStones.length === 0 && !hasLiberties(x, y, currentPlayer)) {
-                // 自杀手判断
-                alert("非法落子！不能下自杀手。");
-                lastMove = null;
-                drawBoard();
-                return;
-            }
-
-            // 正式落子
-            boardState[y][x] = currentPlayer;
+            // 提子逻辑已在落子时执行，这里只负责保存并切换执子方
             
-            // 保存棋盘状态和玩家
             localStorage.setItem('goBoardState', JSON.stringify(boardState));
             currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
             localStorage.setItem('goCurrentPlayer', currentPlayer);
@@ -227,11 +214,22 @@
             const x = Math.round((mouseX - PADDING) / CELL_SIZE);
             const y = Math.round((mouseY - PADDING) / CELL_SIZE);
 
-            if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE) {
-                if (boardState[y][x] === null) {
-                    lastMove = [x, y];
-                    drawBoard();
+            if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE && boardState[y][x] === null) {
+                // 暂时落子并检查规则
+                boardState[y][x] = currentPlayer;
+                const capturedStones = captureStones(x, y);
+
+                if (capturedStones.length === 0 && !hasLiberties(x, y, currentPlayer)) {
+                    // 自杀手，落子非法，移除临时棋子
+                    boardState[y][x] = null;
+                    alert("非法落子！不能下自杀手。");
+                    drawBoard(); // 刷新棋盘
+                    return;
                 }
+
+                // 如果落子合法，设置lastMove，等待确认
+                lastMove = [x, y];
+                drawBoard();
             }
         }
 
