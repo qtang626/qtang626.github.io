@@ -18,19 +18,19 @@
 
         #main-container {
             display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
             width: 100%;
             max-width: 1200px;
             padding: 20px;
             box-sizing: border-box;
-            align-items: flex-start;
+            position: relative;
         }
 
         #header {
-            width: 100%;
-            text-align: left;
-            margin-bottom: 20px;
-            padding-left: 20px;
-            box-sizing: border-box;
+            position: absolute;
+            top: 20px;
+            left: 20px;
         }
 
         #header h1 {
@@ -41,19 +41,20 @@
 
         #board-and-controls {
             display: flex;
-            flex-direction: column;
-            align-items: center;
-            width: 100%;
+            flex: 1;
+            justify-content: center;
+            align-items: flex-start;
+            margin-top: 60px; /* 为标题留出空间 */
         }
 
         #board-container {
             position: relative;
-            /* 棋盘尺寸增大，这里调整了宽度和高度 */
             width: 600px;
             height: 600px;
-            background-color: #d1b48c; /* 棋盘木色 */
+            background-color: #d1b48c;
             border: 2px solid #333;
             box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+            margin: 0 auto; /* 棋盘居中 */
         }
 
         canvas {
@@ -62,42 +63,40 @@
             left: 0;
         }
 
+        #controls-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-left: 40px;
+            margin-top: 100px; /* 匹配棋盘位置 */
+        }
+
         #status {
-            margin-top: 20px;
             font-size: 1.2em;
             font-weight: bold;
             color: #555;
+            margin-bottom: 20px;
         }
 
-        #controls {
-            margin-top: 20px;
+        .control-buttons {
             display: flex;
-            justify-content: center;
+            flex-direction: column;
+            gap: 15px; /* 按钮之间的垂直间距 */
         }
 
         button {
             padding: 10px 20px;
             font-size: 16px;
-            margin: 0 10px;
             cursor: pointer;
             border: 1px solid #ccc;
             background-color: #fff;
             border-radius: 5px;
             transition: background-color 0.2s;
+            width: 120px; /* 统一按钮宽度 */
         }
 
         button:hover {
             background-color: #eee;
-        }
-
-        /* 棋子样式 */
-        .black-stone {
-            background-color: #000;
-        }
-
-        .white-stone {
-            background-color: #fff;
-            border: 1px solid #333;
         }
     </style>
 </head>
@@ -111,10 +110,12 @@
             <div id="board-container">
                 <canvas id="goBoard" width="600" height="600"></canvas>
             </div>
-            <div id="status">当前执子：黑子</div>
-            <div id="controls">
-                <button id="confirmBtn">确认并保存</button>
-                <button id="resignBtn">投子认负</button>
+            <div id="controls-panel">
+                <div id="status">当前执子：黑子</div>
+                <div class="control-buttons">
+                    <button id="confirmBtn">确认并保存</button>
+                    <button id="resignBtn">投子认负</button>
+                </div>
             </div>
         </div>
     </div>
@@ -127,7 +128,6 @@
         const resignBtn = document.getElementById('resignBtn');
 
         const GRID_SIZE = 19;
-        // 调整了棋盘的单元格大小以适应更大的棋盘
         const CELL_SIZE = 30;
         const PADDING = 15;
 
