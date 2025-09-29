@@ -46,7 +46,7 @@
             background-color: #d1b48c;
             border: 2px solid #333;
             box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
-            margin-top: 60px; /* 为标题留出空间 */
+            margin-top: 60px;
         }
         
         #goBoard {
@@ -71,7 +71,7 @@
         .control-buttons {
             display: flex;
             flex-direction: column;
-            gap: 15px; /* 按钮之间的垂直间距 */
+            gap: 15px;
         }
 
         button {
@@ -82,7 +82,7 @@
             background-color: #fff;
             border-radius: 5px;
             transition: background-color 0.2s;
-            width: 120px; /* 统一按钮宽度 */
+            width: 120px;
         }
 
         button:hover {
@@ -214,8 +214,9 @@
             const mouseX = event.clientX - rect.left;
             const mouseY = event.clientY - rect.top;
 
-            const x = Math.round((mouseX - PADDING) / CELL_SIZE);
-            const y = Math.round((mouseY - PADDING) / CELL_SIZE);
+            // 修正后的坐标计算，确保在 0 到 18 的范围内
+            const x = Math.min(Math.round((mouseX - PADDING) / CELL_SIZE), GRID_SIZE - 1);
+            const y = Math.min(Math.round((mouseY - PADDING) / CELL_SIZE), GRID_SIZE - 1);
 
             if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE) {
                 if (boardState[y][x] !== null) {
@@ -315,7 +316,6 @@
             lastMove = null;
             tempBoardState = null;
             
-            // 直接保存空的棋盘状态
             localStorage.setItem('goBoardState', JSON.stringify(boardState));
 
             drawBoard();
