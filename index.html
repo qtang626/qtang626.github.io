@@ -211,11 +211,11 @@
 
         function handleBoardClick(event) {
             const rect = canvas.getBoundingClientRect();
-            const mouseX = event.clientX - rect.left;
-            const mouseY = event.clientY - rect.top;
-
-            const x = Math.min(Math.round((mouseX - PADDING) / CELL_SIZE), GRID_SIZE - 1);
-            const y = Math.min(Math.round((mouseY - PADDING) / CELL_SIZE), GRID_SIZE - 1);
+            const mouseX = event.clientX - rect.left - PADDING;
+            const mouseY = event.clientY - rect.top - PADDING;
+            
+            const x = Math.round(mouseX / CELL_SIZE);
+            const y = Math.round(mouseY / CELL_SIZE);
 
             if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE) {
                 if (boardState[y][x] !== null) {
