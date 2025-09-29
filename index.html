@@ -214,7 +214,6 @@
             const mouseX = event.clientX - rect.left;
             const mouseY = event.clientY - rect.top;
 
-            // 修正后的坐标计算，确保在 0 到 18 的范围内
             const x = Math.min(Math.round((mouseX - PADDING) / CELL_SIZE), GRID_SIZE - 1);
             const y = Math.min(Math.round((mouseY - PADDING) / CELL_SIZE), GRID_SIZE - 1);
 
@@ -317,6 +316,7 @@
             tempBoardState = null;
             
             localStorage.setItem('goBoardState', JSON.stringify(boardState));
+            localStorage.setItem('goCurrentPlayer', currentPlayer);
 
             drawBoard();
             updateStatus();
