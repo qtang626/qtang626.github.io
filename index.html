@@ -5,6 +5,400 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>围棋打谱</title>
     <style>
+        .shudan-goban {
+            --shudan-board-border-width: .15em;
+            --shudan-board-border-color: #CA933A;
+            --shudan-board-background-color: #F1B458;
+            --shudan-board-foreground-color: #5E2E0C;
+            --shudan-black-background-color: #222;
+            --shudan-black-foreground-color: #eee;
+            --shudan-white-background-color: #eee;
+            --shudan-white-foreground-color: #222;
+            position: relative;
+            border: var(--shudan-board-border-width) solid var(--shudan-board-border-color);
+            color: var(--shudan-board-foreground-color);
+        }
+        .shudan-goban:not(.shudan-coordinates) {
+            padding: .25em;
+        }
+        .shudan-goban-image {
+            background: url('./board.png') var(--shudan-board-background-color);
+        }
+        .shudan-coordx span, .shudan-coordy span {
+            font-size: .6em;
+        }
+        .shudan-vertex div {
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .shudan-goban::after {
+            content: '';
+            position: absolute;
+            top: calc(-1 * var(--shudan-board-border-width));
+            left: calc(-1 * var(--shudan-board-border-width));
+            bottom: calc(-1 * var(--shudan-board-border-width));
+            right: calc(-1 * var(--shudan-board-border-width));
+            background: linear-gradient(to bottom, rgba(234, 220, 192, .1), transparent),
+            linear-gradient(to bottom, transparent, rgba(23, 10, 2, .05));
+            pointer-events: none;
+            z-index: 3;
+        }
+        .shudan-goban.shudan-busy::after {
+            animation: 2s linear -.5s shudan-busy infinite;
+            background-color: rgba(23, 10, 2, .1);
+            background-image: linear-gradient(to right, transparent 30%, rgba(255, 255, 255, .2) 50%, transparent 70%);
+            background-size: 19em 100%;
+            background-repeat: no-repeat;
+            pointer-events: all;
+        }
+        @keyframes shudan-busy {
+            from {
+                background-position: -19em 0;
+            }
+            to {
+                background-position: calc(100% + 19em) 0;
+            }
+        }
+        .shudan-gridline, .shudan-hoshi {
+            fill: var(--shudan-board-foreground-color);
+        }
+        .shudan-vertex .shudan-stone {
+            top: .04em;
+            left: .04em;
+            width: calc(100% - .08em);
+            height: calc(100% - .08em);
+        }
+        .shudan-vertex.shudan-sign_0 .shudan-stone {
+            pointer-events: none;
+        }
+        .shudan-vertex:not(.shudan-sign_0) .shudan-stone::before {
+            content: '';
+            display: block;
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 50%;
+            background: rgba(23, 10, 2, .4);
+            box-shadow: 0 .1em .2em rgba(23, 10, 2, .4);
+        }
+        .shudan-vertex .shudan-inner {
+            text-indent: -9999rem;
+        }
+        .shudan-vertex:not(.shudan-sign_0).shudan-dimmed .shudan-stone {
+            opacity: .6;
+        }
+        .shudan-stone-image {
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
+        }
+        .shudan-stone-image.shudan-sign_1 {
+            background-image: url('./stone_1.svg');
+        }
+        .shudan-stone-image.shudan-sign_-1 {
+            background-image: url('./stone_-1.svg');
+        }
+        .shudan-vertex:not(.shudan-sign_0).shudan-animate .shudan-stone {
+            transition: transform .2s;
+        }
+        .shudan-vertex:not(.shudan-sign_0).shudan-shift_1 .shudan-stone {
+            transform: translate(-.07em, 0);
+        }
+        .shudan-vertex:not(.shudan-sign_0).shudan-shift_2 .shudan-stone {
+            transform: translate(0, -.07em);
+        }
+        .shudan-vertex:not(.shudan-sign_0).shudan-shift_3 .shudan-stone {
+            transform: translate(.07em, 0);
+        }
+        .shudan-vertex:not(.shudan-sign_0).shudan-shift_4 .shudan-stone {
+            transform: translate(0, .07em);
+        }
+        .shudan-vertex:not(.shudan-sign_0).shudan-shift_5 .shudan-stone {
+            transform: translate(-.04em, -.04em);
+        }
+        .shudan-vertex:not(.shudan-sign_0).shudan-shift_6 .shudan-stone {
+            transform: translate(.04em, -.04em);
+        }
+        .shudan-vertex:not(.shudan-sign_0).shudan-shift_7 .shudan-stone {
+            transform: translate(.04em, .04em);
+        }
+        .shudan-vertex:not(.shudan-sign_0).shudan-shift_8 .shudan-stone {
+            transform: translate(-.04em, .04em);
+        }
+        .shudan-vertex .shudan-marker {
+            left: .04em;
+            top: .04em;
+            width: calc(100% - .08em);
+            height: calc(100% - .08em);
+            text-align: center;
+            fill: var(--shudan-board-background-color);
+            stroke: var(--shudan-board-foreground-color);
+            stroke-width: .07em;
+            pointer-events: none;
+        }
+        .shudan-vertex.shudan-sign_1 .shudan-marker,
+        .shudan-vertex.shudan-sign_-1 .shudan-marker {
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            fill: none;
+        }
+        .shudan-vertex.shudan-sign_1 .shudan-marker {
+            stroke: var(--shudan-black-foreground-color);
+        }
+        .shudan-vertex.shudan-sign_-1 .shudan-marker {
+            stroke: var(--shudan-white-foreground-color);
+        }
+        .shudan-vertex.shudan-marker_point .shudan-marker {
+            stroke: none;
+            fill: var(--shudan-board-foreground-color);
+        }
+        .shudan-vertex.shudan-marker_point.shudan-sign_1 .shudan-marker {
+            fill: var(--shudan-black-foreground-color);
+        }
+        .shudan-vertex.shudan-marker_point.shudan-sign_-1 .shudan-marker {
+            fill: var(--shudan-white-foreground-color);
+        }
+        .shudan-vertex.shudan-marker_loader .shudan-marker {
+            stroke-dasharray: 1em;
+            animation: 1.5s linear 0s shudan-rotation infinite;
+        }
+        @keyframes shudan-rotation {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        .shudan-vertex.shudan-marker_label .shudan-marker {
+            display: inline-block;
+            width: auto;
+            height: auto;
+            left: 50%;
+            top: 50%;
+            max-width: 1.67em;
+            max-height: 1.67em;
+            overflow: hidden;
+            background: var(--shudan-board-background-color);
+            color: var(--shudan-board-foreground-color);
+            font-size: .6em;
+            line-height: 1.26;
+            text-align: center;
+            text-overflow: ellipsis;
+            white-space: pre;
+            transform: translate(-50%, -50%);
+        }
+        .shudan-vertex.shudan-marker_label.shudan-sign_1 .shudan-marker {
+            background: transparent;
+            color: var(--shudan-black-foreground-color);
+        }
+        .shudan-vertex.shudan-marker_label.shudan-sign_-1 .shudan-marker {
+            background: transparent;
+            color: var(--shudan-white-foreground-color);
+        }
+        .shudan-vertex.shudan-smalllabel .shudan-marker {
+            max-height: 2.7em;
+            max-width: 2.7em;
+            font-size: .36em;
+        }
+        .shudan-vertex .shudan-ghost {
+            left: 50%;
+            top: 50%;
+            width: .4em;
+            height: .4em;
+            opacity: .5;
+            transform: translate(calc(-50% + .5px), calc(-50% + .5px));
+        }
+        .shudan-vertex .shudan-ghost::before {
+            content: '';
+            box-sizing: border-box;
+            display: none;
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            width: .4em;
+            height: .4em;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .shudan-vertex.shudan-ghost_faint .shudan-ghost {
+            opacity: .3;
+        }
+        .shudan-vertex.shudan-sign_0.shudan-ghost_1 .shudan-ghost::before,
+        .shudan-vertex.shudan-sign_0.shudan-ghost_-1 .shudan-ghost::before {
+            display: block;
+        }
+        .shudan-vertex.shudan-ghost_1 .shudan-ghost::before {
+            background: rgba(0, 0, 0, .8);
+        }
+        .shudan-vertex.shudan-ghost_-1 .shudan-ghost::before {
+            background: white;
+        }
+        .shudan-vertex.shudan-ghost_good .shudan-ghost::before {
+            background: #59A80F;
+        }
+        .shudan-vertex.shudan-ghost_interesting .shudan-ghost::before {
+            background: #4886D5;
+        }
+        .shudan-vertex.shudan-ghost_doubtful .shudan-ghost::before {
+            background: #92278F;
+        }
+        .shudan-vertex.shudan-ghost_bad .shudan-ghost::before {
+            background: #F02311;
+        }
+        .shudan-vertex .shudan-paint {
+            overflow: hidden;
+        }
+        .shudan-vertex .shudan-paint::before {
+            content: '';
+            display: block;
+            position: absolute;
+            left: 0;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            opacity: var(--shudan-paint-opacity);
+            box-shadow: var(--shudan-paint-box-shadow);
+            background: transparent;
+            border-radius: .2em;
+        }
+        .shudan-vertex.shudan-paint_1 .shudan-paint::before {
+            background: var(--shudan-black-background-color);
+        }
+        .shudan-vertex.shudan-paint_-1 .shudan-paint::before {
+            background: var(--shudan-white-background-color);
+        }
+        .shudan-vertex.shudan-paintedleft .shudan-paint::before {
+            border-left: none;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+        .shudan-vertex.shudan-paintedright .shudan-paint::before {
+            border-right: none;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        .shudan-vertex.shudan-paintedtop .shudan-paint::before {
+            border-top: none;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+        .shudan-vertex.shudan-paintedbottom .shudan-paint::before {
+            border-bottom: none;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        .shudan-vertex .shudan-heat {
+            top: 50%;
+            left: 50%;
+            margin-left: -1px;
+            margin-top: -1px;
+            border-radius: 50%;
+            width: 1px;
+            height: 1px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity .5s, box-shadow .5s;
+        }
+        .shudan-vertex.shudan-heat_9 .shudan-heat {
+            background: #59A80F;
+            box-shadow: 0 0 1em 1em #59A80F;
+            opacity: .8;
+        }
+        .shudan-vertex.shudan-heat_8 .shudan-heat {
+            background: #59A80F;
+            box-shadow: 0 0 1em .9em #59A80F;
+            opacity: .7;
+        }
+        .shudan-vertex.shudan-heat_7 .shudan-heat {
+            background: #4886D5;
+            box-shadow: 0 0 1em .75em #4886D5;
+            opacity: .8;
+        }
+        .shudan-vertex.shudan-heat_6 .shudan-heat {
+            background: #4886D5;
+            box-shadow: 0 0 .9em .6em #4886D5;
+            opacity: .8;
+        }
+        .shudan-vertex.shudan-heat_5 .shudan-heat {
+            background: #4886D5;
+            box-shadow: 0 0 .9em .55em #4886D5;
+            opacity: .7;
+        }
+        .shudan-vertex.shudan-heat_4 .shudan-heat {
+            background: #92278F;
+            box-shadow: 0 0 .85em .5em #92278F;
+            opacity: .8;
+        }
+        .shudan-vertex.shudan-heat_3 .shudan-heat {
+            background: #92278F;
+            box-shadow: 0 0 .8em .45em #92278F;
+            opacity: .7;
+        }
+        .shudan-vertex.shudan-heat_2 .shudan-heat {
+            background: #F02311;
+            box-shadow: 0 0 .75em .4em #F02311;
+            opacity: .8;
+        }
+        .shudan-vertex.shudan-heat_1 .shudan-heat {
+            background: #F02311;
+            box-shadow: 0 0 .75em .4em #F02311;
+            opacity: .7;
+        }
+        .shudan-vertex .shudan-heatlabel {
+            display: inline-block;
+            height: auto;
+            top: 50%;
+            left: 50%;
+            overflow: hidden;
+            color: white;
+            font-size: .36em;
+            line-height: 1.26;
+            text-align: center;
+            text-overflow: ellipsis;
+            text-shadow: 0 .1em .3em black;
+            white-space: pre;
+            opacity: .9;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+        }
+        .shudan-vertex .shudan-selection {
+            box-sizing: border-box;
+            border: .1em solid #0082F0;
+            border-radius: .2em;
+            background: rgba(0, 130, 240, .2);
+        }
+        .shudan-vertex.shudan-selectedleft .shudan-selection {
+            border-left: none;
+            border-top-left-radius: 0;
+            border-bottom-left-radius: 0;
+        }
+        .shudan-vertex.shudan-selectedright .shudan-selection {
+            border-right: none;
+            border-top-right-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        .shudan-vertex.shudan-selectedtop .shudan-selection {
+            border-top: none;
+            border-top-left-radius: 0;
+            border-top-right-radius: 0;
+        }
+        .shudan-vertex.shudan-selectedbottom .shudan-selection {
+            border-bottom: none;
+            border-bottom-left-radius: 0;
+            border-bottom-right-radius: 0;
+        }
+        .shudan-line,
+        .shudan-arrow {
+            fill: none;
+            stroke: var(--shudan-board-foreground-color);
+            stroke-width: .11em;
+        }
         body {
             display: flex;
             flex-direction: column;
@@ -15,7 +409,6 @@
             background-color: #f4f4f4;
             min-height: 100vh;
         }
-
         #main-container {
             display: flex;
             justify-content: center;
@@ -26,50 +419,43 @@
             box-sizing: border-box;
             position: relative;
         }
-
         #header {
             position: absolute;
             top: 20px;
             left: 20px;
         }
-
         #header h1 {
             margin: 0;
             font-size: 2em;
             color: #333;
         }
-
-        #board-container {
-            position: relative;
-            width: 600px;
-            height: 600px;
-            background-color: #d1b48c;
-            border: 2px solid #333;
-            box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+        #goban-container {
             margin-top: 60px;
+            position: relative;
         }
-        
         #controls-panel {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
             display: flex;
             flex-direction: column;
-            align-items: flex-start;
-            margin-top: 60px;
-            margin-left: 40px;
+            align-items: flex-end;
+            gap: 10px;
+            background-color: rgba(255, 255, 255, 0.7);
+            padding: 10px;
+            border-radius: 5px;
         }
-
         #status {
             font-size: 1.2em;
             font-weight: bold;
             color: #555;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
-
         .control-buttons {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 10px;
         }
-
         button {
             padding: 10px 20px;
             font-size: 16px;
@@ -80,116 +466,9 @@
             transition: background-color 0.2s;
             width: 120px;
         }
-
         button:hover {
             background-color: #eee;
         }
-
-        /* * 以下为根据你提供的 CSS 文件修改和精简后的样式
-        */
-
-        .shudan-goban {
-            --shudan-board-border-width: 0.15em;
-            --shudan-board-border-color: #CA933A;
-            --shudan-board-background-color: #F1B458;
-            --shudan-board-foreground-color: #5E2E0C;
-            --shudan-black-background-color: #222;
-            --shudan-black-foreground-color: #eee;
-            --shudan-white-background-color: #eee;
-            --shudan-white-foreground-color: #222;
-            
-            position: relative;
-            border: var(--shudan-board-border-width) solid var(--shudan-board-border-color);
-            background-color: var(--shudan-board-background-color);
-            color: var(--shudan-board-foreground-color);
-            box-sizing: border-box;
-            display: grid;
-            grid-template-columns: repeat(19, 1fr);
-            grid-template-rows: repeat(19, 1fr);
-            padding: 1em; /* 棋盘边距 */
-            width: 100%;
-            height: 100%;
-        }
-
-        .shudan-vertex {
-            position: relative;
-            cursor: pointer;
-        }
-
-        .shudan-vertex::before, .shudan-vertex::after {
-            content: '';
-            position: absolute;
-            background: var(--shudan-board-foreground-color);
-            z-index: 1;
-        }
-        
-        .shudan-vertex::before {
-            width: 1px;
-            height: 100%;
-            left: 50%;
-            top: 0;
-            transform: translateX(-50%);
-        }
-
-        .shudan-vertex::after {
-            width: 100%;
-            height: 1px;
-            left: 0;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        /* 移除边缘的线 */
-        .shudan-vertex:first-child::before,
-        .shudan-vertex:last-child::before,
-        .shudan-vertex:nth-child(19n+1)::after,
-        .shudan-vertex:nth-child(19n)::after {
-            display: none;
-        }
-
-        .shudan-vertex:first-child::before,
-        .shudan-vertex:nth-child(19n+1)::before { left: auto; right: 50%; }
-        .shudan-vertex:nth-child(19n)::before,
-        .shudan-vertex:last-child::before { right: auto; left: 50%; }
-        .shudan-vertex:nth-child(n+362)::after { top: auto; bottom: 50%; }
-
-        .shudan-hoshi {
-            position: absolute;
-            width: 6px;
-            height: 6px;
-            background-color: var(--shudan-board-foreground-color);
-            border-radius: 50%;
-            left: 50%;
-            top: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 2;
-        }
-
-        .shudan-stone {
-            position: absolute;
-            width: 85%;
-            height: 85%;
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            transition: transform 0.1s;
-            z-index: 3;
-        }
-
-        .shudan-stone.shudan-black {
-            background-color: var(--shudan-black-background-color);
-        }
-
-        .shudan-stone.shudan-white {
-            background-color: var(--shudan-white-background-color);
-        }
-
-        /* 临时落子样式 */
-        .shudan-stone.shudan-temp {
-            opacity: 0.6;
-        }
-
     </style>
 </head>
 <body>
@@ -198,215 +477,132 @@
         <div id="header">
             <h1>围棋打谱</h1>
         </div>
-        
-        <div id="board-container" class="shudan-goban">
-            </div>
-        
-        <div id="controls-panel">
-            <div id="status">当前执子：黑子</div>
-            <div class="control-buttons">
-                <button id="confirmBtn">确认</button>
-                <button id="resignBtn">投子认负</button>
+        <div id="goban-container">
+            <div id="goban-root"></div>
+            <div id="controls-panel">
+                <div id="status">当前执子：黑子</div>
+                <div class="control-buttons">
+                    <button id="confirmBtn">确认并保存</button>
+                    <button id="resignBtn">投子认负</button>
+                </div>
             </div>
         </div>
     </div>
 
-    <script>
-        const boardContainer = document.getElementById('board-container');
-        const statusDiv = document.getElementById('status');
-        const confirmBtn = document.getElementById('confirmBtn');
-        const resignBtn = document.getElementById('resignBtn');
+    <script type="module">
+        import { createElement as h, render } from "https://cdn.skypack.dev/preact";
+        import { useState, useEffect } from "https://cdn.skypack.dev/preact/hooks";
+        import Goban from "https://cdn.skypack.dev/@sabaki/shudan@1.7.1";
+        import Board from "https://cdn.skypack.dev/@sabaki/go-board@1.4.3";
 
-        const GRID_SIZE = 19;
-        
-        let boardState = [];
-        let currentPlayer = 'black';
-        let lastMove = null;
-        let tempBoardState = null;
-        
-        function saveBoard() {
-            if (!lastMove) {
-                return;
-            }
-            
-            boardState = tempBoardState;
-            localStorage.setItem('goBoardState', JSON.stringify(boardState));
-            
-            currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
-            localStorage.setItem('goCurrentPlayer', currentPlayer);
-            
-            lastMove = null;
-            tempBoardState = null;
-            updateStatus();
-            drawBoard();
-        }
-
-        function loadBoard() {
-            const savedState = localStorage.getItem('goBoardState');
-            const savedPlayer = localStorage.getItem('goCurrentPlayer');
-            if (savedState) {
-                boardState = JSON.parse(savedState);
-                currentPlayer = savedPlayer || 'black';
-            } else {
-                boardState = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null));
-            }
-            updateStatus();
-            drawBoard();
-        }
-
-        function drawBoard() {
-            boardContainer.innerHTML = '';
-            const stateToDraw = tempBoardState || boardState;
-
-            for (let i = 0; i < GRID_SIZE * GRID_SIZE; i++) {
-                const vertex = document.createElement('div');
-                vertex.classList.add('shudan-vertex');
-                const x = i % GRID_SIZE;
-                const y = Math.floor(i / GRID_SIZE);
-                vertex.dataset.x = x;
-                vertex.dataset.y = y;
-
-                const stone = stateToDraw[y][x];
-                if (stone) {
-                    const stoneDiv = document.createElement('div');
-                    stoneDiv.classList.add('shudan-stone', `shudan-${stone}`);
-                    vertex.appendChild(stoneDiv);
-                }
-
-                if (lastMove && lastMove[0] === x && lastMove[1] === y) {
-                    const stoneDiv = document.createElement('div');
-                    stoneDiv.classList.add('shudan-stone', `shudan-${currentPlayer}`, 'shudan-temp');
-                    vertex.appendChild(stoneDiv);
-                }
-
-                const starPoints = [[3, 3], [3, 9], [3, 15], [9, 3], [9, 9], [9, 15], [15, 3], [15, 9], [15, 15]];
-                if (starPoints.some(p => p[0] === x && p[1] === y)) {
-                    const hoshiDiv = document.createElement('div');
-                    hoshiDiv.classList.add('shudan-hoshi');
-                    vertex.appendChild(hoshiDiv);
-                }
-
-                boardContainer.appendChild(vertex);
-            }
-        }
-        
-        function handleBoardClick(event) {
-            const vertex = event.target.closest('.shudan-vertex');
-            if (!vertex) return;
-
-            const x = parseInt(vertex.dataset.x);
-            const y = parseInt(vertex.dataset.y);
-
-            if (boardState[y][x] !== null) {
-                return;
-            }
-            
-            const testBoard = JSON.parse(JSON.stringify(boardState));
-            testBoard[y][x] = currentPlayer;
-            
-            const capturedStones = captureStones(testBoard, x, y);
-
-            if (capturedStones.length === 0 && !hasLiberties(testBoard, x, y, currentPlayer)) {
-                alert("非法落子！不能下自杀手。");
-                lastMove = null;
-                tempBoardState = null;
-                drawBoard();
-                return;
-            }
-
-            lastMove = [x, y];
-            tempBoardState = testBoard;
-            drawBoard();
-        }
-
-        // --- 核心规则部分 ---
-        function getNeighbors(x, y) {
-            const neighbors = [];
-            if (x > 0) neighbors.push([x - 1, y]);
-            if (x < GRID_SIZE - 1) neighbors.push([x + 1, y]);
-            if (y > 0) neighbors.push([x, y - 1]);
-            if (y < GRID_SIZE - 1) neighbors.push([x, y + 1]);
-            return neighbors;
-        }
-
-        function getGroup(testBoard, x, y, color, visited) {
-            const group = [];
-            const stack = [[x, y]];
-            visited[y][x] = true;
-
-            while (stack.length > 0) {
-                const [curX, curY] = stack.pop();
-                group.push([curX, curY]);
-                const neighbors = getNeighbors(curX, curY);
-
-                for (const [nx, ny] of neighbors) {
-                    if (testBoard[ny][nx] === color && !visited[ny][nx]) {
-                        visited[ny][nx] = true;
-                        stack.push([nx, ny]);
+        const App = () => {
+            const [board, setBoard] = useState(() => {
+                const savedSignMap = localStorage.getItem('goBoardState');
+                if (savedSignMap) {
+                    try {
+                        return new Board(JSON.parse(savedSignMap));
+                    } catch (e) {
+                        return new Board();
                     }
                 }
-            }
-            return group;
-        }
-        
-        function hasLiberties(testBoard, x, y, color) {
-            const visited = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false));
-            const group = getGroup(testBoard, x, y, color, visited);
+                return new Board();
+            });
 
-            for (const [gx, gy] of group) {
-                const neighbors = getNeighbors(gx, gy);
-                for (const [nx, ny] of neighbors) {
-                    if (testBoard[ny][nx] === null) {
-                        return true;
-                    }
+            const [currentPlayer, setCurrentPlayer] = useState(() => {
+                const savedPlayer = localStorage.getItem('goCurrentPlayer');
+                return savedPlayer ? parseInt(savedPlayer) : 1;
+            });
+
+            const [lastMove, setLastMove] = useState(null);
+
+            const updateStatus = (player) => {
+                const statusDiv = document.getElementById('status');
+                if (statusDiv) {
+                    statusDiv.textContent = `当前执子：${player === 1 ? '黑子' : '白子'}`;
                 }
-            }
-            return false;
-        }
+            };
 
-        function captureStones(testBoard, x, y) {
-            const captured = [];
-            const opponentColor = (testBoard[y][x] === 'black') ? 'white' : 'black';
-            const neighbors = getNeighbors(x, y);
+            useEffect(() => {
+                updateStatus(currentPlayer);
+            }, [currentPlayer]);
 
-            for (const [nx, ny] of neighbors) {
-                if (testBoard[ny][nx] === opponentColor) {
-                    if (!hasLiberties(testBoard, nx, ny, opponentColor)) {
-                        const visited = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false));
-                        const groupToCapture = getGroup(testBoard, nx, ny, opponentColor, visited);
-                        for (const [cx, cy] of groupToCapture) {
-                            testBoard[cy][cx] = null;
-                            captured.push([cx, cy]);
-                        }
-                    }
+            const handleBoardClick = (evt, [x, y]) => {
+                if (board.get([x, y]) === 0) {
+                    setLastMove([x, y]);
+                    const newSignMap = board.signMap.map(row => [...row]);
+                    newSignMap[y][x] = currentPlayer;
+                    setBoard(new Board(newSignMap));
                 }
-            }
-            return captured;
-        }
+            };
 
-        function updateStatus() {
-            statusDiv.textContent = `当前执子：${currentPlayer === 'black' ? '黑子' : '白子'}`;
-        }
+            const saveAndCommitMove = () => {
+                if (!lastMove) return;
 
-        function resetBoard() {
-            boardState = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null));
-            currentPlayer = 'black';
-            lastMove = null;
-            tempBoardState = null;
-            
-            localStorage.setItem('goBoardState', JSON.stringify(boardState));
-            localStorage.setItem('goCurrentPlayer', currentPlayer);
+                const newBoard = new Board(board.signMap);
+                const [x, y] = lastMove;
+                const capturedStones = newBoard.get.getCaptured(currentPlayer);
 
-            drawBoard();
-            updateStatus();
-        }
+                newBoard.set(x, y, currentPlayer);
+                const liberties = newBoard.get.getLiberties([x, y]);
 
-        boardContainer.addEventListener('click', handleBoardClick);
-        confirmBtn.addEventListener('click', saveBoard);
-        resignBtn.addEventListener('click', resetBoard);
+                if (liberties === 0 && capturedStones.length === 0) {
+                    alert("规则错误: 自杀落子！");
+                    return;
+                }
 
-        window.onload = loadBoard;
+                if (capturedStones.length > 0) {
+                    capturedStones.forEach(s => newBoard.set(s, 0));
+                }
+
+                setBoard(newBoard);
+                setCurrentPlayer(currentPlayer === 1 ? -1 : 1);
+                setLastMove(null);
+
+                localStorage.setItem('goBoardState', JSON.stringify(newBoard.signMap));
+                localStorage.setItem('goCurrentPlayer', newBoard.turn === 1 ? '1' : '-1');
+            };
+
+            const resetBoard = () => {
+                const newBoard = new Board();
+                setBoard(newBoard);
+                setCurrentPlayer(1);
+                setLastMove(null);
+                localStorage.setItem('goBoardState', JSON.stringify(newBoard.signMap));
+                localStorage.setItem('goCurrentPlayer', '1');
+                updateStatus(1);
+            };
+
+            useEffect(() => {
+                const confirmBtn = document.getElementById('confirmBtn');
+                const resignBtn = document.getElementById('resignBtn');
+                if (confirmBtn) {
+                    confirmBtn.addEventListener('click', saveAndCommitMove);
+                }
+                if (resignBtn) {
+                    resignBtn.addEventListener('click', resetBoard);
+                }
+                return () => {
+                    if (confirmBtn) {
+                        confirmBtn.removeEventListener('click', saveAndCommitMove);
+                    }
+                    if (resignBtn) {
+                        resignBtn.removeEventListener('click', resetBoard);
+                    }
+                };
+            }, [lastMove, currentPlayer, board]);
+
+            return h(Goban, {
+                signMap: board.signMap,
+                onVertexClick: handleBoardClick,
+                selectedVertices: lastMove ? [lastMove] : [],
+                dimmedVertices: board.get.getCaptured(currentPlayer).map(s => s),
+                vertexSize: 30, // Default size
+            });
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            render(h(App), document.getElementById("goban-root"));
+        });
     </script>
-
 </body>
 </html>
