@@ -5,400 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>围棋打谱</title>
     <style>
-        .shudan-goban {
-            --shudan-board-border-width: .15em;
-            --shudan-board-border-color: #CA933A;
-            --shudan-board-background-color: #F1B458;
-            --shudan-board-foreground-color: #5E2E0C;
-            --shudan-black-background-color: #222;
-            --shudan-black-foreground-color: #eee;
-            --shudan-white-background-color: #eee;
-            --shudan-white-foreground-color: #222;
-            position: relative;
-            border: var(--shudan-board-border-width) solid var(--shudan-board-border-color);
-            color: var(--shudan-board-foreground-color);
-        }
-        .shudan-goban:not(.shudan-coordinates) {
-            padding: .25em;
-        }
-        .shudan-goban-image {
-            background: url('./board.png') var(--shudan-board-background-color);
-        }
-        .shudan-coordx span, .shudan-coordy span {
-            font-size: .6em;
-        }
-        .shudan-vertex div {
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-        }
-        .shudan-goban::after {
-            content: '';
-            position: absolute;
-            top: calc(-1 * var(--shudan-board-border-width));
-            left: calc(-1 * var(--shudan-board-border-width));
-            bottom: calc(-1 * var(--shudan-board-border-width));
-            right: calc(-1 * var(--shudan-board-border-width));
-            background: linear-gradient(to bottom, rgba(234, 220, 192, .1), transparent),
-            linear-gradient(to bottom, transparent, rgba(23, 10, 2, .05));
-            pointer-events: none;
-            z-index: 3;
-        }
-        .shudan-goban.shudan-busy::after {
-            animation: 2s linear -.5s shudan-busy infinite;
-            background-color: rgba(23, 10, 2, .1);
-            background-image: linear-gradient(to right, transparent 30%, rgba(255, 255, 255, .2) 50%, transparent 70%);
-            background-size: 19em 100%;
-            background-repeat: no-repeat;
-            pointer-events: all;
-        }
-        @keyframes shudan-busy {
-            from {
-                background-position: -19em 0;
-            }
-            to {
-                background-position: calc(100% + 19em) 0;
-            }
-        }
-        .shudan-gridline, .shudan-hoshi {
-            fill: var(--shudan-board-foreground-color);
-        }
-        .shudan-vertex .shudan-stone {
-            top: .04em;
-            left: .04em;
-            width: calc(100% - .08em);
-            height: calc(100% - .08em);
-        }
-        .shudan-vertex.shudan-sign_0 .shudan-stone {
-            pointer-events: none;
-        }
-        .shudan-vertex:not(.shudan-sign_0) .shudan-stone::before {
-            content: '';
-            display: block;
-            position: absolute;
-            left: 0;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            border-radius: 50%;
-            background: rgba(23, 10, 2, .4);
-            box-shadow: 0 .1em .2em rgba(23, 10, 2, .4);
-        }
-        .shudan-vertex .shudan-inner {
-            text-indent: -9999rem;
-        }
-        .shudan-vertex:not(.shudan-sign_0).shudan-dimmed .shudan-stone {
-            opacity: .6;
-        }
-        .shudan-stone-image {
-            background-repeat: no-repeat;
-            background-size: 100% 100%;
-        }
-        .shudan-stone-image.shudan-sign_1 {
-            background-image: url('./stone_1.svg');
-        }
-        .shudan-stone-image.shudan-sign_-1 {
-            background-image: url('./stone_-1.svg');
-        }
-        .shudan-vertex:not(.shudan-sign_0).shudan-animate .shudan-stone {
-            transition: transform .2s;
-        }
-        .shudan-vertex:not(.shudan-sign_0).shudan-shift_1 .shudan-stone {
-            transform: translate(-.07em, 0);
-        }
-        .shudan-vertex:not(.shudan-sign_0).shudan-shift_2 .shudan-stone {
-            transform: translate(0, -.07em);
-        }
-        .shudan-vertex:not(.shudan-sign_0).shudan-shift_3 .shudan-stone {
-            transform: translate(.07em, 0);
-        }
-        .shudan-vertex:not(.shudan-sign_0).shudan-shift_4 .shudan-stone {
-            transform: translate(0, .07em);
-        }
-        .shudan-vertex:not(.shudan-sign_0).shudan-shift_5 .shudan-stone {
-            transform: translate(-.04em, -.04em);
-        }
-        .shudan-vertex:not(.shudan-sign_0).shudan-shift_6 .shudan-stone {
-            transform: translate(.04em, -.04em);
-        }
-        .shudan-vertex:not(.shudan-sign_0).shudan-shift_7 .shudan-stone {
-            transform: translate(.04em, .04em);
-        }
-        .shudan-vertex:not(.shudan-sign_0).shudan-shift_8 .shudan-stone {
-            transform: translate(-.04em, .04em);
-        }
-        .shudan-vertex .shudan-marker {
-            left: .04em;
-            top: .04em;
-            width: calc(100% - .08em);
-            height: calc(100% - .08em);
-            text-align: center;
-            fill: var(--shudan-board-background-color);
-            stroke: var(--shudan-board-foreground-color);
-            stroke-width: .07em;
-            pointer-events: none;
-        }
-        .shudan-vertex.shudan-sign_1 .shudan-marker,
-        .shudan-vertex.shudan-sign_-1 .shudan-marker {
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            fill: none;
-        }
-        .shudan-vertex.shudan-sign_1 .shudan-marker {
-            stroke: var(--shudan-black-foreground-color);
-        }
-        .shudan-vertex.shudan-sign_-1 .shudan-marker {
-            stroke: var(--shudan-white-foreground-color);
-        }
-        .shudan-vertex.shudan-marker_point .shudan-marker {
-            stroke: none;
-            fill: var(--shudan-board-foreground-color);
-        }
-        .shudan-vertex.shudan-marker_point.shudan-sign_1 .shudan-marker {
-            fill: var(--shudan-black-foreground-color);
-        }
-        .shudan-vertex.shudan-marker_point.shudan-sign_-1 .shudan-marker {
-            fill: var(--shudan-white-foreground-color);
-        }
-        .shudan-vertex.shudan-marker_loader .shudan-marker {
-            stroke-dasharray: 1em;
-            animation: 1.5s linear 0s shudan-rotation infinite;
-        }
-        @keyframes shudan-rotation {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
-        }
-        .shudan-vertex.shudan-marker_label .shudan-marker {
-            display: inline-block;
-            width: auto;
-            height: auto;
-            left: 50%;
-            top: 50%;
-            max-width: 1.67em;
-            max-height: 1.67em;
-            overflow: hidden;
-            background: var(--shudan-board-background-color);
-            color: var(--shudan-board-foreground-color);
-            font-size: .6em;
-            line-height: 1.26;
-            text-align: center;
-            text-overflow: ellipsis;
-            white-space: pre;
-            transform: translate(-50%, -50%);
-        }
-        .shudan-vertex.shudan-marker_label.shudan-sign_1 .shudan-marker {
-            background: transparent;
-            color: var(--shudan-black-foreground-color);
-        }
-        .shudan-vertex.shudan-marker_label.shudan-sign_-1 .shudan-marker {
-            background: transparent;
-            color: var(--shudan-white-foreground-color);
-        }
-        .shudan-vertex.shudan-smalllabel .shudan-marker {
-            max-height: 2.7em;
-            max-width: 2.7em;
-            font-size: .36em;
-        }
-        .shudan-vertex .shudan-ghost {
-            left: 50%;
-            top: 50%;
-            width: .4em;
-            height: .4em;
-            opacity: .5;
-            transform: translate(calc(-50% + .5px), calc(-50% + .5px));
-        }
-        .shudan-vertex .shudan-ghost::before {
-            content: '';
-            box-sizing: border-box;
-            display: none;
-            position: absolute;
-            left: 50%;
-            top: 50%;
-            width: .4em;
-            height: .4em;
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-        }
-        .shudan-vertex.shudan-ghost_faint .shudan-ghost {
-            opacity: .3;
-        }
-        .shudan-vertex.shudan-sign_0.shudan-ghost_1 .shudan-ghost::before,
-        .shudan-vertex.shudan-sign_0.shudan-ghost_-1 .shudan-ghost::before {
-            display: block;
-        }
-        .shudan-vertex.shudan-ghost_1 .shudan-ghost::before {
-            background: rgba(0, 0, 0, .8);
-        }
-        .shudan-vertex.shudan-ghost_-1 .shudan-ghost::before {
-            background: white;
-        }
-        .shudan-vertex.shudan-ghost_good .shudan-ghost::before {
-            background: #59A80F;
-        }
-        .shudan-vertex.shudan-ghost_interesting .shudan-ghost::before {
-            background: #4886D5;
-        }
-        .shudan-vertex.shudan-ghost_doubtful .shudan-ghost::before {
-            background: #92278F;
-        }
-        .shudan-vertex.shudan-ghost_bad .shudan-ghost::before {
-            background: #F02311;
-        }
-        .shudan-vertex .shudan-paint {
-            overflow: hidden;
-        }
-        .shudan-vertex .shudan-paint::before {
-            content: '';
-            display: block;
-            position: absolute;
-            left: 0;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            opacity: var(--shudan-paint-opacity);
-            box-shadow: var(--shudan-paint-box-shadow);
-            background: transparent;
-            border-radius: .2em;
-        }
-        .shudan-vertex.shudan-paint_1 .shudan-paint::before {
-            background: var(--shudan-black-background-color);
-        }
-        .shudan-vertex.shudan-paint_-1 .shudan-paint::before {
-            background: var(--shudan-white-background-color);
-        }
-        .shudan-vertex.shudan-paintedleft .shudan-paint::before {
-            border-left: none;
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
-        }
-        .shudan-vertex.shudan-paintedright .shudan-paint::before {
-            border-right: none;
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-        }
-        .shudan-vertex.shudan-paintedtop .shudan-paint::before {
-            border-top: none;
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-        }
-        .shudan-vertex.shudan-paintedbottom .shudan-paint::before {
-            border-bottom: none;
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
-        }
-        .shudan-vertex .shudan-heat {
-            top: 50%;
-            left: 50%;
-            margin-left: -1px;
-            margin-top: -1px;
-            border-radius: 50%;
-            width: 1px;
-            height: 1px;
-            opacity: 0;
-            pointer-events: none;
-            transition: opacity .5s, box-shadow .5s;
-        }
-        .shudan-vertex.shudan-heat_9 .shudan-heat {
-            background: #59A80F;
-            box-shadow: 0 0 1em 1em #59A80F;
-            opacity: .8;
-        }
-        .shudan-vertex.shudan-heat_8 .shudan-heat {
-            background: #59A80F;
-            box-shadow: 0 0 1em .9em #59A80F;
-            opacity: .7;
-        }
-        .shudan-vertex.shudan-heat_7 .shudan-heat {
-            background: #4886D5;
-            box-shadow: 0 0 1em .75em #4886D5;
-            opacity: .8;
-        }
-        .shudan-vertex.shudan-heat_6 .shudan-heat {
-            background: #4886D5;
-            box-shadow: 0 0 .9em .6em #4886D5;
-            opacity: .8;
-        }
-        .shudan-vertex.shudan-heat_5 .shudan-heat {
-            background: #4886D5;
-            box-shadow: 0 0 .9em .55em #4886D5;
-            opacity: .7;
-        }
-        .shudan-vertex.shudan-heat_4 .shudan-heat {
-            background: #92278F;
-            box-shadow: 0 0 .85em .5em #92278F;
-            opacity: .8;
-        }
-        .shudan-vertex.shudan-heat_3 .shudan-heat {
-            background: #92278F;
-            box-shadow: 0 0 .8em .45em #92278F;
-            opacity: .7;
-        }
-        .shudan-vertex.shudan-heat_2 .shudan-heat {
-            background: #F02311;
-            box-shadow: 0 0 .75em .4em #F02311;
-            opacity: .8;
-        }
-        .shudan-vertex.shudan-heat_1 .shudan-heat {
-            background: #F02311;
-            box-shadow: 0 0 .75em .4em #F02311;
-            opacity: .7;
-        }
-        .shudan-vertex .shudan-heatlabel {
-            display: inline-block;
-            height: auto;
-            top: 50%;
-            left: 50%;
-            overflow: hidden;
-            color: white;
-            font-size: .36em;
-            line-height: 1.26;
-            text-align: center;
-            text-overflow: ellipsis;
-            text-shadow: 0 .1em .3em black;
-            white-space: pre;
-            opacity: .9;
-            transform: translate(-50%, -50%);
-            pointer-events: none;
-        }
-        .shudan-vertex .shudan-selection {
-            box-sizing: border-box;
-            border: .1em solid #0082F0;
-            border-radius: .2em;
-            background: rgba(0, 130, 240, .2);
-        }
-        .shudan-vertex.shudan-selectedleft .shudan-selection {
-            border-left: none;
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
-        }
-        .shudan-vertex.shudan-selectedright .shudan-selection {
-            border-right: none;
-            border-top-right-radius: 0;
-            border-bottom-right-radius: 0;
-        }
-        .shudan-vertex.shudan-selectedtop .shudan-selection {
-            border-top: none;
-            border-top-left-radius: 0;
-            border-top-right-radius: 0;
-        }
-        .shudan-vertex.shudan-selectedbottom .shudan-selection {
-            border-bottom: none;
-            border-bottom-left-radius: 0;
-            border-bottom-right-radius: 0;
-        }
-        .shudan-line,
-        .shudan-arrow {
-            fill: none;
-            stroke: var(--shudan-board-foreground-color);
-            stroke-width: .11em;
-        }
         body {
             display: flex;
             flex-direction: column;
@@ -432,6 +38,12 @@
         #goban-container {
             margin-top: 60px;
             position: relative;
+            background-color: #F1B458; /* 棋盘背景色 */
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+        }
+        canvas {
+            display: block;
+            border: 2px solid #5E2E0C; /* 棋盘边框颜色 */
         }
         #controls-panel {
             position: absolute;
@@ -478,7 +90,7 @@
             <h1>围棋打谱</h1>
         </div>
         <div id="goban-container">
-            <div id="goban-root"></div>
+            <canvas id="goBoard"></canvas>
             <div id="controls-panel">
                 <div id="status">当前执子：黑子</div>
                 <div class="control-buttons">
@@ -489,119 +101,207 @@
         </div>
     </div>
 
-    <script type="module">
-        import { createElement as h, render } from "https://cdn.skypack.dev/preact";
-        import { useState, useEffect } from "https://cdn.skypack.dev/preact/hooks";
-        import Goban from "https://cdn.skypack.dev/@sabaki/shudan@1.7.1";
-        import Board from "https://cdn.skypack.dev/@sabaki/go-board@1.4.3";
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const canvas = document.getElementById('goBoard');
+            const ctx = canvas.getContext('2d');
+            const statusDiv = document.getElementById('status');
+            const confirmBtn = document.getElementById('confirmBtn');
+            const resignBtn = document.getElementById('resignBtn');
 
-        const App = () => {
-            const [board, setBoard] = useState(() => {
-                const savedSignMap = localStorage.getItem('goBoardState');
-                if (savedSignMap) {
-                    try {
-                        return new Board(JSON.parse(savedSignMap));
-                    } catch (e) {
-                        return new Board();
+            const GRID_SIZE = 19;
+            const CELL_SIZE = 30;
+            const PADDING = 15;
+            const BOARD_SIZE = (GRID_SIZE - 1) * CELL_SIZE + 2 * PADDING;
+            canvas.width = canvas.height = BOARD_SIZE;
+
+            let boardState = [];
+            let currentPlayer = 1; // 1 for black, -1 for white
+            let lastMove = null;
+
+            function saveBoard() {
+                localStorage.setItem('goBoardState', JSON.stringify(boardState));
+                localStorage.setItem('goCurrentPlayer', currentPlayer);
+            }
+
+            function loadBoard() {
+                const savedState = localStorage.getItem('goBoardState');
+                const savedPlayer = localStorage.getItem('goCurrentPlayer');
+                if (savedState) {
+                    boardState = JSON.parse(savedState);
+                    currentPlayer = parseInt(savedPlayer) || 1;
+                } else {
+                    boardState = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(0));
+                }
+                updateStatus();
+                drawBoard();
+            }
+
+            function updateStatus() {
+                statusDiv.textContent = `当前执子：${currentPlayer === 1 ? '黑子' : '白子'}`;
+            }
+
+            function drawBoard() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = '#F1B458';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.strokeStyle = '#5E2E0C';
+                ctx.lineWidth = 1;
+
+                // Draw horizontal and vertical lines
+                for (let i = 0; i < GRID_SIZE; i++) {
+                    ctx.beginPath();
+                    ctx.moveTo(PADDING + i * CELL_SIZE, PADDING);
+                    ctx.lineTo(PADDING + i * CELL_SIZE, BOARD_SIZE - PADDING);
+                    ctx.stroke();
+
+                    ctx.beginPath();
+                    ctx.moveTo(PADDING, PADDING + i * CELL_SIZE);
+                    ctx.lineTo(BOARD_SIZE - PADDING, PADDING + i * CELL_SIZE);
+                    ctx.stroke();
+                }
+
+                // Draw star points
+                const starPoints = [[3, 3], [3, 9], [3, 15], [9, 3], [9, 9], [9, 15], [15, 3], [15, 9], [15, 15]];
+                ctx.fillStyle = '#5E2E0C';
+                starPoints.forEach(([x, y]) => {
+                    ctx.beginPath();
+                    ctx.arc(PADDING + x * CELL_SIZE, PADDING + y * CELL_SIZE, 3, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+
+                // Draw all stones
+                for (let y = 0; y < GRID_SIZE; y++) {
+                    for (let x = 0; x < GRID_SIZE; x++) {
+                        const stone = boardState[y][x];
+                        if (stone !== 0) {
+                            ctx.beginPath();
+                            ctx.arc(PADDING + x * CELL_SIZE, PADDING + y * CELL_SIZE, CELL_SIZE / 2 - 2, 0, 2 * Math.PI);
+                            ctx.fillStyle = stone === 1 ? '#222' : '#eee';
+                            ctx.fill();
+                            ctx.strokeStyle = stone === 1 ? '#eee' : '#222';
+                            ctx.lineWidth = 1;
+                            ctx.stroke();
+                        }
                     }
                 }
-                return new Board();
-            });
+            }
 
-            const [currentPlayer, setCurrentPlayer] = useState(() => {
-                const savedPlayer = localStorage.getItem('goCurrentPlayer');
-                return savedPlayer ? parseInt(savedPlayer) : 1;
-            });
-
-            const [lastMove, setLastMove] = useState(null);
-
-            const updateStatus = (player) => {
-                const statusDiv = document.getElementById('status');
-                if (statusDiv) {
-                    statusDiv.textContent = `当前执子：${player === 1 ? '黑子' : '白子'}`;
+            function getLiberties(x, y, color, visited) {
+                if (x < 0 || x >= GRID_SIZE || y < 0 || y >= GRID_SIZE || visited[y][x]) {
+                    return 0;
                 }
-            };
+                visited[y][x] = true;
 
-            useEffect(() => {
-                updateStatus(currentPlayer);
-            }, [currentPlayer]);
-
-            const handleBoardClick = (evt, [x, y]) => {
-                if (board.get([x, y]) === 0) {
-                    setLastMove([x, y]);
-                    const newSignMap = board.signMap.map(row => [...row]);
-                    newSignMap[y][x] = currentPlayer;
-                    setBoard(new Board(newSignMap));
+                if (boardState[y][x] === 0) {
+                    return 1;
                 }
-            };
+                if (boardState[y][x] !== color) {
+                    return 0;
+                }
 
-            const saveAndCommitMove = () => {
-                if (!lastMove) return;
+                return getLiberties(x + 1, y, color, visited) +
+                       getLiberties(x - 1, y, color, visited) +
+                       getLiberties(x, y + 1, color, visited) +
+                       getLiberties(x, y - 1, color, visited);
+            }
 
-                const newBoard = new Board(board.signMap);
-                const [x, y] = lastMove;
-                const capturedStones = newBoard.get.getCaptured(currentPlayer);
-
-                newBoard.set(x, y, currentPlayer);
-                const liberties = newBoard.get.getLiberties([x, y]);
-
-                if (liberties === 0 && capturedStones.length === 0) {
-                    alert("规则错误: 自杀落子！");
+            function getGroup(x, y, color, group) {
+                if (x < 0 || x >= GRID_SIZE || y < 0 || y >= GRID_SIZE || boardState[y][x] !== color) {
                     return;
                 }
-
-                if (capturedStones.length > 0) {
-                    capturedStones.forEach(s => newBoard.set(s, 0));
+                if (group.some(s => s[0] === x && s[1] === y)) {
+                    return;
                 }
+                group.push([x, y]);
+                getGroup(x + 1, y, color, group);
+                getGroup(x - 1, y, color, group);
+                getGroup(x, y + 1, color, group);
+                getGroup(x, y - 1, color, group);
+            }
 
-                setBoard(newBoard);
-                setCurrentPlayer(currentPlayer === 1 ? -1 : 1);
-                setLastMove(null);
+            function checkCaptures(x, y, player) {
+                let capturedStones = [];
+                const opponent = -player;
+                const neighbors = [[x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]];
 
-                localStorage.setItem('goBoardState', JSON.stringify(newBoard.signMap));
-                localStorage.setItem('goCurrentPlayer', newBoard.turn === 1 ? '1' : '-1');
-            };
-
-            const resetBoard = () => {
-                const newBoard = new Board();
-                setBoard(newBoard);
-                setCurrentPlayer(1);
-                setLastMove(null);
-                localStorage.setItem('goBoardState', JSON.stringify(newBoard.signMap));
-                localStorage.setItem('goCurrentPlayer', '1');
-                updateStatus(1);
-            };
-
-            useEffect(() => {
-                const confirmBtn = document.getElementById('confirmBtn');
-                const resignBtn = document.getElementById('resignBtn');
-                if (confirmBtn) {
-                    confirmBtn.addEventListener('click', saveAndCommitMove);
-                }
-                if (resignBtn) {
-                    resignBtn.addEventListener('click', resetBoard);
-                }
-                return () => {
-                    if (confirmBtn) {
-                        confirmBtn.removeEventListener('click', saveAndCommitMove);
+                neighbors.forEach(([nx, ny]) => {
+                    if (nx >= 0 && nx < GRID_SIZE && ny >= 0 && ny < GRID_SIZE && boardState[ny][nx] === opponent) {
+                        const group = [];
+                        getGroup(nx, ny, opponent, group);
+                        const liberties = group.reduce((sum, [gx, gy]) => {
+                            const visited = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false));
+                            return sum + getLiberties(gx, gy, opponent, visited);
+                        }, 0);
+                        if (liberties === 0) {
+                            capturedStones = capturedStones.concat(group);
+                        }
                     }
-                    if (resignBtn) {
-                        resignBtn.removeEventListener('click', resetBoard);
+                });
+
+                return capturedStones;
+            }
+
+            function handleBoardClick(event) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = event.clientX - rect.left;
+                const mouseY = event.clientY - rect.top;
+
+                const x = Math.round((mouseX - PADDING) / CELL_SIZE);
+                const y = Math.round((mouseY - PADDING) / CELL_SIZE);
+
+                if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE && boardState[y][x] === 0) {
+                    lastMove = [x, y];
+                    const tempBoard = JSON.parse(JSON.stringify(boardState));
+                    tempBoard[y][x] = currentPlayer;
+
+                    // Check for suicide
+                    const group = [];
+                    getGroup(x, y, currentPlayer, group);
+                    const liberties = group.reduce((sum, [gx, gy]) => {
+                        const visited = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false));
+                        return sum + getLiberties(gx, gy, currentPlayer, visited);
+                    }, 0);
+
+                    const captured = checkCaptures(x, y, currentPlayer);
+
+                    if (liberties === 0 && captured.length === 0) {
+                        alert("规则错误: 自杀落子！");
+                        lastMove = null;
+                        return;
                     }
-                };
-            }, [lastMove, currentPlayer, board]);
 
-            return h(Goban, {
-                signMap: board.signMap,
-                onVertexClick: handleBoardClick,
-                selectedVertices: lastMove ? [lastMove] : [],
-                dimmedVertices: board.get.getCaptured(currentPlayer).map(s => s),
-                vertexSize: 30, // Default size
-            });
-        };
+                    boardState[y][x] = currentPlayer;
 
-        document.addEventListener('DOMContentLoaded', () => {
-            render(h(App), document.getElementById("goban-root"));
+                    // Capture opponent stones
+                    if (captured.length > 0) {
+                        captured.forEach(([cx, cy]) => {
+                            boardState[cy][cx] = 0;
+                        });
+                    }
+
+                    currentPlayer *= -1;
+                    updateStatus();
+                    drawBoard();
+                    saveBoard();
+                }
+            }
+
+            function resetBoard() {
+                boardState = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(0));
+                currentPlayer = 1;
+                lastMove = null;
+                updateStatus();
+                drawBoard();
+                saveBoard();
+            }
+
+            canvas.addEventListener('click', handleBoardClick);
+            confirmBtn.addEventListener('click', saveBoard);
+            resignBtn.addEventListener('click', resetBoard);
+
+            loadBoard();
         });
     </script>
 </body>
