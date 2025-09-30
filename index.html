@@ -43,7 +43,7 @@
             position: relative;
             width: 600px;
             height: 600px;
-            background-color: #857343;
+            background-color: #D2B48C;
             border: 2px solid #333;
             box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
             margin-top: 60px;
@@ -159,7 +159,7 @@
 
         function drawBoard() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = '#333';
+            ctx.strokeStyle = '#000';
             ctx.lineWidth = 1;
 
             for (let i = 0; i < GRID_SIZE; i++) {
@@ -174,7 +174,7 @@
             }
 
             const starPoints = [[3, 3], [3, 9], [3, 15], [9, 3], [9, 9], [9, 15], [15, 3], [15, 9], [15, 15]];
-            ctx.fillStyle = '#333';
+            ctx.fillStyle = '#000';
             starPoints.forEach(([x, y]) => {
                 ctx.beginPath();
                 ctx.arc(PADDING + x * CELL_SIZE, PADDING + y * CELL_SIZE, 3, 0, 2 * Math.PI);
