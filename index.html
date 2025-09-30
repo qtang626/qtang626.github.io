@@ -1,334 +1,334 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Go Game</title>
+    <title>围棋打谱</title>
     <style>
         body {
             display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #f0f0f0;
             flex-direction: column;
+            align-items: center;
             font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            min-height: 100vh;
         }
 
-        #go-board {
-            display: grid;
-            grid-template-columns: repeat(19, 20px);
-            grid-template-rows: repeat(19, 20px);
-            background-color: #c99e69;
-            border: 1px solid #333;
-            position: relative;
-            padding: 10px;
-        }
-
-        .grid-point {
-            width: 20px;
-            height: 20px;
+        #main-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            width: 100%;
+            max-width: 1200px;
+            padding: 20px;
             box-sizing: border-box;
             position: relative;
-            cursor: pointer;
         }
 
-        .grid-point::before, .grid-point::after {
-            content: '';
+        #header {
             position: absolute;
-            background-color: #333;
+            top: 20px;
+            left: 20px;
         }
 
-        .grid-point::before {
-            width: 100%;
-            height: 1px;
-            top: 50%;
-            left: 0;
+        #header h1 {
+            margin: 0;
+            font-size: 2em;
+            color: #333;
         }
 
-        .grid-point::after {
-            width: 1px;
-            height: 100%;
-            top: 0;
-            left: 50%;
+        #board-container {
+            position: relative;
+            width: 600px;
+            height: 600px;
+            background-color: #d1b48c;
+            border: 2px solid #333;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+            margin-top: 60px;
         }
         
-        /* Intersection-specific styles to ensure lines meet correctly */
-        .grid-point:first-child::before, .grid-point:last-child::before,
-        .grid-point:nth-child(19n+1)::after, .grid-point:nth-child(19n)::after {
-            width: 100%;
-            height: 100%;
-            background-color: transparent;
+        #goBoard {
+            display: block;
         }
 
-        .grid-point:nth-child(19n+1)::after { left: 0; }
-        .grid-point:nth-child(19n)::after { left: 100%; }
-        .grid-point:nth-child(-n+19)::before { top: 0; }
-        .grid-point:nth-child(n+343)::before { top: 100%; }
-
-        .go-stone {
-            width: 18px;
-            height: 18px;
-            border-radius: 50%;
-            position: absolute;
-            top: 1px;
-            left: 1px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.3);
-        }
-
-        .go-stone.black {
-            background-color: black;
-        }
-
-        .go-stone.white {
-            background-color: white;
-            border: 1px solid #333;
-        }
-
-        .go-stone.preview {
-            opacity: 0.5;
-            box-shadow: none;
-        }
-
-        .controls {
-            margin-top: 20px;
+        #controls-panel {
             display: flex;
-            gap: 10px;
+            flex-direction: column;
+            align-items: flex-start;
+            margin-top: 60px;
+            margin-left: 40px;
         }
+
+        #status {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .control-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
         button {
             padding: 10px 20px;
             font-size: 16px;
             cursor: pointer;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            border-radius: 5px;
+            transition: background-color 0.2s;
+            width: 120px;
         }
 
+        button:hover {
+            background-color: #eee;
+        }
     </style>
 </head>
 <body>
 
-    <div id="go-board"></div>
-    <div class="controls">
-        <button id="confirm-btn">确认</button>
-        <button id="resign-btn">投子认负</button>
+    <div id="main-container">
+        <div id="header">
+            <h1>围棋打谱</h1>
+        </div>
+        
+        <div id="board-container">
+            <canvas id="goBoard" width="600" height="600"></canvas>
+        </div>
+        
+        <div id="controls-panel">
+            <div id="status">当前执子：黑子</div>
+            <div class="control-buttons">
+                <button id="confirmBtn">确认</button>
+                <button id="resignBtn">投子认负</button>
+            </div>
+        </div>
     </div>
 
     <script>
-        const BOARD_SIZE = 19;
-        const boardElement = document.getElementById('go-board');
-        const confirmBtn = document.getElementById('confirm-btn');
-        const resignBtn = document.getElementById('resign-btn');
+        const canvas = document.getElementById('goBoard');
+        const ctx = canvas.getContext('2d');
+        const statusDiv = document.getElementById('status');
+        const confirmBtn = document.getElementById('confirmBtn');
+        const resignBtn = document.getElementById('resignBtn');
+
+        const GRID_SIZE = 19;
+        const CELL_SIZE = 30;
+        // 计算居中边距
+        const PADDING = (canvas.width - (GRID_SIZE - 1) * CELL_SIZE) / 2;
 
         let boardState = [];
         let currentPlayer = 'black';
-        let tempStone = null;
-        let tempStonePos = { x: -1, y: -1 };
+        let lastMove = null;
+        let tempBoardState = null;
 
-        const API_URL = 'http://localhost:3000/api/game';
-
-        async function fetchGameState() {
-            try {
-                const response = await fetch(API_URL);
-                if (!response.ok) throw new Error('Network response was not ok');
-                const data = await response.json();
-                boardState = data.boardState;
-                currentPlayer = data.currentPlayer;
-                renderBoard();
-            } catch (error) {
-                console.error('Failed to fetch game state:', error);
+        function saveBoard() {
+            if (!lastMove) {
+                return;
             }
+            
+            boardState = tempBoardState;
+            localStorage.setItem('goBoardState', JSON.stringify(boardState));
+            
+            currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
+            localStorage.setItem('goCurrentPlayer', currentPlayer);
+            
+            lastMove = null;
+            tempBoardState = null;
+            updateStatus();
+            drawBoard();
         }
 
-        async function saveGameState() {
-            try {
-                const response = await fetch(API_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ boardState, currentPlayer })
-                });
-                if (!response.ok) throw new Error('Failed to save game state');
-            } catch (error) {
-                console.error('Failed to save game state:', error);
+        function loadBoard() {
+            const savedState = localStorage.getItem('goBoardState');
+            const savedPlayer = localStorage.getItem('goCurrentPlayer');
+            if (savedState) {
+                boardState = JSON.parse(savedState);
+                currentPlayer = savedPlayer || 'black';
+            } else {
+                boardState = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null));
             }
+            updateStatus();
+            drawBoard();
         }
-        
-        function renderBoard() {
-            boardElement.innerHTML = '';
-            for (let y = 0; y < BOARD_SIZE; y++) {
-                for (let x = 0; x < BOARD_SIZE; x++) {
-                    const gridPoint = document.createElement('div');
-                    gridPoint.className = 'grid-point';
-                    gridPoint.dataset.x = x;
-                    gridPoint.dataset.y = y;
 
-                    // Add existing stones
-                    if (boardState[y][x] !== 0) {
-                        const stone = document.createElement('div');
-                        stone.className = `go-stone ${boardState[y][x] === 1 ? 'black' : 'white'}`;
-                        gridPoint.appendChild(stone);
-                    }
+        function drawBoard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 1;
 
-                    // Handle temporary stone display
-                    if (tempStonePos.x === x && tempStonePos.y === y) {
-                        const stone = document.createElement('div');
-                        stone.className = `go-stone preview ${currentPlayer === 'black' ? 'black' : 'white'}`;
-                        tempStone = stone;
-                        gridPoint.appendChild(stone);
+            for (let i = 0; i < GRID_SIZE; i++) {
+                ctx.beginPath();
+                ctx.moveTo(PADDING + i * CELL_SIZE, PADDING);
+                ctx.lineTo(PADDING + i * CELL_SIZE, canvas.height - PADDING);
+                ctx.stroke();
+                ctx.beginPath();
+                ctx.moveTo(PADDING, PADDING + i * CELL_SIZE);
+                ctx.lineTo(canvas.width - PADDING, PADDING + i * CELL_SIZE);
+                ctx.stroke();
+            }
+
+            const starPoints = [[3, 3], [3, 9], [3, 15], [9, 3], [9, 9], [9, 15], [15, 3], [15, 9], [15, 15]];
+            ctx.fillStyle = '#333';
+            starPoints.forEach(([x, y]) => {
+                ctx.beginPath();
+                ctx.arc(PADDING + x * CELL_SIZE, PADDING + y * CELL_SIZE, 3, 0, 2 * Math.PI);
+                ctx.fill();
+            });
+
+            const stateToDraw = tempBoardState || boardState;
+
+            for (let y = 0; y < GRID_SIZE; y++) {
+                for (let x = 0; x < GRID_SIZE; x++) {
+                    const stone = stateToDraw[y][x];
+                    if (stone) {
+                        ctx.beginPath();
+                        ctx.arc(PADDING + x * CELL_SIZE, PADDING + y * CELL_SIZE, CELL_SIZE / 2 - 2, 0, 2 * Math.PI);
+                        ctx.fillStyle = stone === 'black' ? '#000' : '#fff';
+                        ctx.fill();
+                        ctx.strokeStyle = '#333';
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
                     }
-                    boardElement.appendChild(gridPoint);
                 }
             }
+
+            if (lastMove) {
+                const [x, y] = lastMove;
+                ctx.beginPath();
+                ctx.arc(PADDING + x * CELL_SIZE, PADDING + y * CELL_SIZE, CELL_SIZE / 2 - 2, 0, 2 * Math.PI);
+                ctx.fillStyle = currentPlayer === 'black' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)';
+                ctx.fill();
+                ctx.strokeStyle = '#333';
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+        }
+
+        function handleBoardClick(event) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseX = event.clientX - rect.left - PADDING;
+            const mouseY = event.clientY - rect.top - PADDING;
+            
+            const x = Math.round(mouseX / CELL_SIZE);
+            const y = Math.round(mouseY / CELL_SIZE);
+
+            if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE) {
+                if (boardState[y][x] !== null) {
+                    return;
+                }
+                
+                const testBoard = JSON.parse(JSON.stringify(boardState));
+                testBoard[y][x] = currentPlayer;
+                
+                const capturedStones = captureStones(testBoard, x, y);
+
+                if (capturedStones.length === 0 && !hasLiberties(testBoard, x, y, currentPlayer)) {
+                    alert("非法落子！不能下自杀手。");
+                    lastMove = null;
+                    tempBoardState = null;
+                    drawBoard();
+                    return;
+                }
+
+                lastMove = [x, y];
+                tempBoardState = testBoard;
+                drawBoard();
+            }
+        }
+
+        function getNeighbors(x, y) {
+            const neighbors = [];
+            if (x > 0) neighbors.push([x - 1, y]);
+            if (x < GRID_SIZE - 1) neighbors.push([x + 1, y]);
+            if (y > 0) neighbors.push([x, y - 1]);
+            if (y < GRID_SIZE - 1) neighbors.push([x, y + 1]);
+            return neighbors;
+        }
+
+        function getGroup(testBoard, x, y, color, visited) {
+            const group = [];
+            const stack = [[x, y]];
+            visited[y][x] = true;
+
+            while (stack.length > 0) {
+                const [curX, curY] = stack.pop();
+                group.push([curX, curY]);
+                const neighbors = getNeighbors(curX, curY);
+
+                for (const [nx, ny] of neighbors) {
+                    if (testBoard[ny][nx] === color && !visited[ny][nx]) {
+                        visited[ny][nx] = true;
+                        stack.push([nx, ny]);
+                    }
+                }
+            }
+            return group;
         }
         
-        function isSuicide(board, x, y, player) {
-            let tempBoard = JSON.parse(JSON.stringify(board));
-            tempBoard[y][x] = player;
-            if (getLiberties(tempBoard, x, y, player).length === 0) {
-                const capturedOpponents = getCapturedStones(tempBoard, x, y, player);
-                if (capturedOpponents.length === 0) {
-                    return true;
+        function hasLiberties(testBoard, x, y, color) {
+            const visited = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false));
+            const group = getGroup(testBoard, x, y, color, visited);
+
+            for (const [gx, gy] of group) {
+                const neighbors = getNeighbors(gx, gy);
+                for (const [nx, ny] of neighbors) {
+                    if (testBoard[ny][nx] === null) {
+                        return true;
+                    }
                 }
             }
             return false;
         }
 
-        function getCapturedStones(board, x, y, player) {
-            const opponent = player === 1 ? 2 : 1;
+        function captureStones(testBoard, x, y) {
             const captured = [];
+            const opponentColor = (testBoard[y][x] === 'black') ? 'white' : 'black';
             const neighbors = getNeighbors(x, y);
 
-            for (const neighbor of neighbors) {
-                if (board[neighbor.y][neighbor.x] === opponent) {
-                    const liberties = getLiberties(board, neighbor.x, neighbor.y, opponent);
-                    if (liberties.length === 0) {
-                        const group = getGroup(board, neighbor.x, neighbor.y, opponent);
-                        captured.push(...group);
+            for (const [nx, ny] of neighbors) {
+                if (testBoard[ny][nx] === opponentColor) {
+                    if (!hasLiberties(testBoard, nx, ny, opponentColor)) {
+                        const visited = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false));
+                        const groupToCapture = getGroup(testBoard, nx, ny, opponentColor, visited);
+                        for (const [cx, cy] of groupToCapture) {
+                            testBoard[cy][cx] = null;
+                            captured.push([cx, cy]);
+                        }
                     }
                 }
             }
             return captured;
         }
 
-        function getNeighbors(x, y) {
-            const neighbors = [];
-            if (x > 0) neighbors.push({ x: x - 1, y: y });
-            if (x < BOARD_SIZE - 1) neighbors.push({ x: x + 1, y: y });
-            if (y > 0) neighbors.push({ x: x, y: y - 1 });
-            if (y < BOARD_SIZE - 1) neighbors.push({ x: x, y: y + 1 });
-            return neighbors;
+        function updateStatus() {
+            statusDiv.textContent = `当前执子：${currentPlayer === 'black' ? '黑子' : '白子'}`;
         }
 
-        function getGroup(board, x, y, player, visited = new Set()) {
-            const group = [];
-            const queue = [{ x, y }];
-            visited.add(`${x},${y}`);
+        function resetBoard() {
+            boardState = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null));
+            currentPlayer = 'black';
+            lastMove = null;
+            tempBoardState = null;
+            
+            localStorage.setItem('goBoardState', JSON.stringify(boardState));
+            localStorage.setItem('goCurrentPlayer', currentPlayer);
 
-            while (queue.length > 0) {
-                const current = queue.shift();
-                group.push(current);
-
-                const neighbors = getNeighbors(current.x, current.y);
-                for (const neighbor of neighbors) {
-                    if (board[neighbor.y][neighbor.x] === player && !visited.has(`${neighbor.x},${neighbor.y}`)) {
-                        visited.add(`${neighbor.x},${neighbor.y}`);
-                        queue.push(neighbor);
-                    }
-                }
-            }
-            return group;
+            drawBoard();
+            updateStatus();
         }
 
-        function getLiberties(board, x, y, player) {
-            const liberties = [];
-            const visited = new Set();
-            const queue = [{ x, y }];
-            visited.add(`${x},${y}`);
+        canvas.addEventListener('click', handleBoardClick);
+        confirmBtn.addEventListener('click', saveBoard);
+        resignBtn.addEventListener('click', resetBoard);
 
-            while (queue.length > 0) {
-                const current = queue.shift();
-                
-                const neighbors = getNeighbors(current.x, current.y);
-                for (const neighbor of neighbors) {
-                    if (board[neighbor.y][neighbor.x] === 0 && !visited.has(`${neighbor.x},${neighbor.y}`)) {
-                        liberties.push(neighbor);
-                        visited.add(`${neighbor.x},${neighbor.y}`);
-                    }
-                    if (board[neighbor.y][neighbor.x] === player && !visited.has(`${neighbor.x},${neighbor.y}`)) {
-                        visited.add(`${neighbor.x},${neighbor.y}`);
-                        queue.push(neighbor);
-                    }
-                }
-            }
-            return liberties;
-        }
-        
-        boardElement.addEventListener('click', (e) => {
-            const gridPoint = e.target.closest('.grid-point');
-            if (!gridPoint) return;
-            
-            const x = parseInt(gridPoint.dataset.x);
-            const y = parseInt(gridPoint.dataset.y);
-            
-            if (boardState[y][x] === 0) {
-                // Clear previous temporary stone
-                if (tempStone && tempStone.parentNode) {
-                    tempStone.parentNode.removeChild(tempStone);
-                }
-                
-                tempStonePos = { x, y };
-                renderBoard(); // Re-render to show the new temp stone
-            } else {
-                // Clicking on an existing stone should not move the temp stone
-                tempStonePos = { x: -1, y: -1 };
-                renderBoard();
-            }
-        });
-        
-        confirmBtn.addEventListener('click', async () => {
-            if (tempStonePos.x === -1 || tempStonePos.y === -1) {
-                alert('请先选择一个落子点');
-                return;
-            }
-
-            const x = tempStonePos.x;
-            const y = tempStonePos.y;
-            const playerNum = currentPlayer === 'black' ? 1 : 2;
-
-            if (isSuicide(boardState, x, y, playerNum)) {
-                alert('此为自杀手，无法落子。');
-                return;
-            }
-            
-            // Place the stone
-            boardState[y][x] = playerNum;
-
-            // Handle captures
-            const capturedStones = getCapturedStones(boardState, x, y, playerNum);
-            for (const stone of capturedStones) {
-                boardState[stone.y][stone.x] = 0;
-            }
-
-            // Switch player
-            currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
-            
-            // Clear temporary stone
-            tempStonePos = { x: -1, y: -1 };
-            
-            renderBoard();
-            await saveGameState();
-        });
-
-        resignBtn.addEventListener('click', async () => {
-            if (confirm('确定要投子认负吗？新棋局将自动开始。')) {
-                boardState = Array(BOARD_SIZE).fill(0).map(() => Array(BOARD_SIZE).fill(0));
-                currentPlayer = 'black';
-                tempStonePos = { x: -1, y: -1 };
-                renderBoard();
-                await saveGameState();
-            }
-        });
-
-        // Initial load
-        fetchGameState();
-
+        window.onload = loadBoard;
     </script>
+
 </body>
 </html>
