@@ -1,110 +1,108 @@
 <!DOCTYPE html>
-<html lang="zh">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>意识升降机</title>
-    
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
+    <!-- Google Fonts - Inter for general text (Title will also use this) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- 移除中文特定字体链接 -->
     <style>
-        /* 引入 Noto Sans SC 字体 */
-        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;700&display=swap');
-        
         body {
-            font-family: 'Noto Sans SC', sans-serif;
-            /* 更新：
-              使用你参考代码中的背景色 (f7fbf8) 
-            */
-            background-color: #f7fbf8; 
+            font-family: 'Inter', sans-serif;
+            /* 整体背景色改为淡粉色 */
+            background-color: #fce7f3; 
         }
-
-        /* 顶部横幅样式 (来自你的参考) */
-        .header-bg {
-            background-color: #a8dadc;
-            transition: all 0.3s ease-in-out;
+        .container {
+            max-width: 800px;
         }
-
-        /* 内容卡片样式 (来自你的参考) */
-        .content-box {
-            background-color: #ffffff;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border-radius: 1rem;
-        }
-
-        /* 文本样式 (来自你的参考) */
-        .text-content {
-            color: #457b9d; /* Deep sky blue */
-            line-height: 1.8;
-            font-size: 1.125rem; /* 18px */
-        }
-        
-        /* 链接样式 */
-        .text-content a {
-            color: #007bff;
-            text-decoration: none;
-        }
-        .text-content a:hover {
-            text-decoration: underline;
+        /* Style for the banner background - Pink/Rose Gradient */
+        .banner-background {
+            /* 蓝色渐变改为相似的粉色/玫瑰色渐变 */
+            background: linear-gradient(to bottom, #f8c8d8, #e74c8b);
         }
     </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="flex flex-col items-center p-4 sm:p-6 md:p-8">
+    <div class="container bg-white shadow-lg rounded-2xl p-6 sm:p-8 md:p-10 lg:p-12 mb-8 border border-pink-200 w-full">
+        <!-- Main Header - Completely simplified as requested -->
+        <header class="flex justify-center items-center mb-8">
+            <!-- 移除 "Daily Tune Drop" 和 "Contact Us" -->
+        </header>
 
-    <header class="header-bg w-full h-48 sm:h-64 flex items-center justify-center relative">
-        <div class="text-center p-4">
-            <h1 class="text-4xl sm:text-5xl font-bold text-white mb-2 tracking-wider drop-shadow-lg">
-                意识升降机
-            </h1>
-        </div>
-        <div class="absolute bottom-0 left-0 right-0 h-4 bg-white opacity-50 rounded-t-full"></div>
-    </header>
-
-    <main class="flex-grow container mx-auto p-4 sm:p-6 lg:p-8">
-        <div class="content-box p-6 sm:p-8 lg:p-10 mx-auto max-w-4xl">
-            
-            <div class="text-content space-y-6">
-                
-                <p>嘿，树宝！好几个月没跟你说话了，现在想想，也不知道你是在惩罚我，还是在惩罚你自己。你还在生我气嘛，想必是没有了，嘻嘻。</p>
-        
-                <p>我的拖延症很严重，因此很难按照长期制定的计划去执行。你一开始刷我视频的时候我很紧张，给我整出了赶ddl的错觉。但其实我心里是希望有人紧着我的，特别是在开学后的几个月里，我期待着你每天都来看我，在注意到数字攀升后，我就像是服下了强效镇定剂，晚上裹着被子能傻乐呵好久。</p>
-                
-                <p>很奇怪，我明明是个自卑的小孩，跟你在一起的时候却是自信的，简直毫无缘由，看你羞怯的样子我就止不住的欢喜，用一个词来形容那应该就是春风得意了吧，嗯～春风得意～</p>
-                
-                <p>你老是让我掉眼泪。</p>
-                
-                <p>我还是识好的，知道你宠我，虽然表面上很严厉，但内里藏着柔情。这种柔情我很喜欢。</p>
-                
-                <p>我的兴趣爱好不多，看看书，听听音乐，偶尔出门看看风景，回家看看球赛，再就是翻你的动态有没有更新了。</p>
-                
-                <p>在你拉黑了我的spotify之后，我还是很难过的。解解的小说搁置了很长一段时间没有去读，一直到十月才捡起来，说实话文笔是欠点火候的，不曾想它能让我看哭好几次。书里的一些情节，爱凡给秋准备的那些跟我的想法其实不谋"
-                "合，之前微信起名叫秋单纯是比较符合我当时的心境，送你的礼物我很早就已经想清楚了，那首解解的画也是我早年第一次听就想给以后喜欢的人弹的曲子，所以说这本启示路让我想把礼物"
-                "准备好的心更坚定了些。你看呀，围绕着我们之间的巧合居然能有这么多，但我仍不敢说天父的心意是什么，我只知道我喜欢你。在这里要跟你说声抱歉，labubu的嘴线有点歪，向日葵的挂"
-                "链因为钩到清早脑子犯迷糊也缝歪了。字竟然也写歪了，一直都是小学生字体，所以我就不爱写东西，英文还勉强能看，可作为中国人，你过生日我要是还写英文那像什么话嘛，于是硬着头"
-                "皮断断续续练了半个月的书法，写到后面不停地打抖一着急就写歪了。画是照着描的，不然我得画一辈子了。曲子弹得也没有很流畅，反正要给你赔个不是！这些画画，钢琴，练字，都是我"
-                "小时候没坚持下来的，因为你，我愿意去尝试了，恳请你不要嫌弃。</p>
-                
-                <p>其实在你发那条朋友圈之前我就找到你的spotify账号了，当时你关注了bjugrass，我就猜到是你啦，我可是在众多Tricy里面翻了好久呢！</p>
-                
-                <p>实在不知道Irene的生日也在11月。给她包裹时不好空手，就买了本书以表谢意，后面知晓后心里也是不好受，又补了一份礼物。感觉她不太待见我，我真的认真道歉了。你生日马上就要到了，曲"
-                "子还没弹熟练，我实在没时间处理这些情绪了，就把她微信删了。做得有点过分了，肿么办。我是真想跟她成为好朋友的。</p>
-                
-                <p>这个网站原本是要设计出来跟你下围棋的，当然也想写点什么给你。借助强大的AI，我已经把棋盘，落子逻辑什么的都弄好了，可惜数据只能储存在本地，需要更高深的编程技能才能实现用户在云"
-                "端的互动。实在是术业有专攻，有点难为我了。不过围棋我也是刚开始学，也就只能下下局部的对杀hh。这里放一个外网平台的链接，你看心情决定要不要跟我玩：<a href="https://online-go.com/welcome/?linked-challenge=3uJPaSsyUpLNGtUuMLfnA2" target="_blank">https://online-go.com/welcome/?linked-challenge=3uJPaSsyUpLNGtUuMLfnA2</a></p>
-                
-                <p>不多说了，免得惹你厌烦。再者就是，有些话，需要见到你才能说出口，不然宁可烂在肚子里好了。</p>
-                
-                <p>最后，我有问题要问你：</p>
-                
-                <blockquote class="border-l-4 border-gray-300 pl-4 italic font-bold">
-                    “如果完美之存在于虚拟世界，你会爱真实的我吗？”
-                </blockquote>
-                
-                <p>生日快乐。</p>
-
+        <!-- Main Title Banner Section -->
+        <!-- 向上移动更多 (-mt-10) -->
+        <section class="mb-4 text-center -mt-10">
+            <!-- 缩短宽度 (max-w-2xl) 和 调整高度 (height: 180px) -->
+            <div class="relative max-w-2xl mx-auto rounded-xl overflow-hidden shadow-md mb-4 banner-background" style="height: 180px;">
+                <!-- flexbox properties changed to center content horizontally and vertically -->
+                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                    <div class="text-white"> 
+                        <!-- 标题“意识升降机”：移除中文特定字体样式，使用默认的 font-bold -->
+                        <h2 class="text-4xl sm:text-5xl font-bold mb-1">意识升降机</h2>
+                    </div>
+                </div>
             </div>
-        </div>
-    </main>
+        </section>
 
+        <!-- Custom Content Section: ALL TEXT INCLUDED -->
+        <section class="text-gray-800 text-base sm:text-lg leading-relaxed space-y-6">
+            <!-- 包含 Word 文档中所有文本的滚动容器 -->
+            <!-- 滚动容器上方的间距需要保留，因此我们调整父级 section 的间距 -->
+            <div class="bg-pink-50 p-6 rounded-lg shadow-inner border border-pink-100 h-96 overflow-y-auto text-left">
+                <!-- 文本内容从 Word 文档复制过来，并用 <p> 标签分段 -->
+                <p class="mb-4">嘿，树宝！好几个月没跟你说话了，现在想想，也不知道你是在惩罚我，还是在惩罚你自己。你还在生我气嘛，想必是没有了，嘻嘻。</p>
+                
+                <p class="mb-4">我的拖延症很严重，因此很难按照长期制定的计划去执行。你一开始刷我视频的时候我很紧张，给我整出了赶ddl的错觉。但其实我心里是希望有人紧着我的，特别是在开学后的几个月里，我期待着你每天都来看我，在注意到数字攀升后，我就像是服下了强效镇定剂，晚上裹着被子能傻乐呵好久。</p>
+                
+                <p class="mb-4">很奇怪，我明明是个自卑的小孩，跟你在一起的时候却是自信的，简直毫无缘由，看你羞怯的样子我就止不住的欢喜，用一个词来形容那应该就是春风得意了吧，嗯～春风得意～</p>
+                
+                <p class="mb-4">你老是让我掉眼泪。</p>
+                
+                <p class="mb-4">我还是识好的，知道你宠我，虽然表面上很严厉，但内里藏着柔情。这种柔情我很喜欢。</p>
+                
+                <p class="mb-4">我的兴趣爱好不多，看看书，听听音乐，偶尔出门看看风景，回家看看球赛，再就是翻你的动态有没有更新了。</p>
+                
+                <p class="mb-4">在你拉黑了我的 spotify 之后，我还是很难过的。解解的小说搁置了很长一段时间没有去读，一直到十月才捡起来，说实话文笔是欠点火候的，不曾想它能让我看哭好几次。书里的一些情节，爱凡给秋准备的那些跟我的想法其实不谋而合，之前微信起名叫秋单纯是比较符合我当时的心境，送你的礼物我很早就已经想清楚了，那首解解的画也是我早年第一次听就想给以后喜欢的人弹的曲子，所以说这本启示路让我想把礼物准备好的心更坚定了些。你看呀，围绕着我们之间的巧合居然能有这么多，但我仍不敢说天父的心意是什么，我只知道我喜欢你。在这里要跟你说声抱歉，labubu 的嘴线有点歪，向日葵的挂链因为钩到清早脑子犯迷糊也缝歪了。字竟然也写歪了，一直都是小学生字体，所以我就不爱写东西，英文还勉强能看，可作为中国人，你过生日我要是还写英文那像什么话嘛，于是硬着头皮断断续续练了半个月的书法，写到后面不停地打抖一着急就写歪了。画是照着描的，不然我得画一辈子了。曲子弹得也没有很流畅，反正要给你赔个不是！这些画画，钢琴，练字，都是我小时候没坚持下来的，因为你，我愿意去尝试了，恳请你不要嫌弃。</p>
+                
+                <p class="mb-4">其实在你发那条朋友圈之前我就找到你的 spotify 账号了，当时你关注了 bjugrass，我就猜到是你啦，我可是在众多 Tricy 里面翻了好久呢！</p>
+                
+                <p class="mb-4">实在不知道 Irene 的生日也在 11 月。给她包裹时不好空手，就买了本书以表谢意，后面知晓后心里也是不好受，又补了一份礼物。感觉她不太待见我，我真的认真道歉了。你生日马上就要到了，曲子还没弹熟练，我实在没时间处理这些情绪了，就把她微信删了。做得有点过分了，肿么办。我是真想跟她成为好朋友的。</p>
+
+                <!-- 围棋和提问部分（保持样式不变） -->
+                <p class="mb-4">这个网站原本是要设计出来跟你下围棋的，当然也想写点什么给你。借助强大的 AI，我已经把棋盘，落子逻辑什么的都弄好了，可惜数据只能储存在本地，需要更高深的编程技能才能实现用户在云端的互动。实在是术业有专攻，有点难为我了。不过围棋我也是刚开始学，也就只能下下局部的对杀 hh。</p>
+                
+                <p class="mb-4 text-center">这里放一个外网平台的链接，你看心情决定要不要跟我玩：</p>
+                <div class="text-center mb-6">
+                    <!-- 按钮颜色改为粉色系 -->
+                    <a href="https://online-go.com/welcome/?linked-challenge=3uJPaSsyUpLNGtUuMLfnA2" target="_blank"
+                       class="inline-block bg-pink-600 hover:bg-pink-700 text-white font-bold py-2 px-6 rounded-full shadow-lg transform transition duration-300 ease-in-out hover:scale-105 text-sm">
+                        围棋对弈链接
+                    </a>
+                </div>
+                
+                <p class="mb-8">不多说了，免得惹你厌烦。再者就是，有些话，需要见到你才能说出口，不然宁可烂在肚子里好了。</p>
+                
+                <!-- 提问引导语 - 增加 mb-6，使其与下方模块间隔更大 -->
+                <p class="mb-6">最后，我有问题要问你：</p>
+
+                <!-- 核心问题模块（单独显示） - 增加 mt-2 使其与上一句间隔开 -->
+                <div class="bg-pink-100 p-4 rounded-lg shadow-md border border-pink-200 mx-auto max-w-sm text-center mb-4 mt-2">
+                    <p class="text-2xl font-bold text-pink-800 italic">“如果完美之存在于虚拟世界，你会爱真实的我吗？”</p>
+                </div>
+                
+                <!-- 祝福语 - 增加 mt-6，使其与核心问题模块间隔更大 -->
+                <p class="mt-6 text-center text-xl font-semibold text-pink-700">生日快乐。</p>
+            </div>
+        </section>
+
+        <!-- Footer (only copyright) -->
+        <footer class="text-center text-gray-500 text-sm mt-8 pt-4 border-t border-pink-200">
+            <!-- 标识已更新为 "乐土世界" -->
+            <p>&copy; 乐土世界</p>
+        </footer>
+    </div>
 </body>
 </html>
