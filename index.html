@@ -1,334 +1,48 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>围棋打谱</title>
-    <style>
-        body {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f4;
-            min-height: 100vh;
-        }
-
-        #main-container {
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-            width: 100%;
-            max-width: 1200px;
-            padding: 20px;
-            box-sizing: border-box;
-            position: relative;
-        }
-
-        #header {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-        }
-
-        #header h1 {
-            margin: 0;
-            font-size: 2em;
-            color: #333;
-        }
-
-        #board-container {
-            position: relative;
-            width: 600px;
-            height: 600px;
-            background-color: #D2B48C;
-            border: 2px solid #333;
-            box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
-            margin-top: 60px;
-        }
-        
-        #goBoard {
-            display: block;
-        }
-
-        #controls-panel {
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            margin-top: 60px;
-            margin-left: 40px;
-        }
-
-        #status {
-            font-size: 1.2em;
-            font-weight: bold;
-            color: #555;
-            margin-bottom: 20px;
-        }
-
-        .control-buttons {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            border: 1px solid #ccc;
-            background-color: #fff;
-            border-radius: 5px;
-            transition: background-color 0.2s;
-            width: 120px;
-        }
-
-        button:hover {
-            background-color: #eee;
-        }
-    </style>
-</head>
+    <title>意识升降机 - 博客</title>
+    <link rel="stylesheet" href="styles.css">
+    </head>
 <body>
 
-    <div id="main-container">
-        <div id="header">
-            <h1>围棋打谱</h1>
-        </div>
-        
-        <div id="board-container">
-            <canvas id="goBoard" width="600" height="600"></canvas>
-        </div>
-        
-        <div id="controls-panel">
-            <div id="status">当前执子：黑子</div>
-            <div class="control-buttons">
-                <button id="confirmBtn">确认</button>
-                <button id="resignBtn">投子认负</button>
-            </div>
-        </div>
-    </div>
+    <header>
+        <h1>意识升降机</h1>
+    </header>
 
-    <script>
-        const canvas = document.getElementById('goBoard');
-        const ctx = canvas.getContext('2d');
-        const statusDiv = document.getElementById('status');
-        const confirmBtn = document.getElementById('confirmBtn');
-        const resignBtn = document.getElementById('resignBtn');
+    <main>
+        <section class="post-content">
+            [cite_start]<p>嘿，树宝！好几个月没跟你说话了，现在想想，也不知道你是在惩罚我，还是在惩罚你自己。你还在生我气嘛，想必是没有了，嘻嘻。 [cite: 1]</p>
 
-        const GRID_SIZE = 19;
-        const CELL_SIZE = 30;
-        // 计算居中边距
-        const PADDING = (canvas.width - (GRID_SIZE - 1) * CELL_SIZE) / 2;
+            [cite_start]<p>我的拖延症很严重，因此很难按照长期制定的计划去执行。你一开始刷我视频的时候我很紧张，给我整出了赶ddl的错觉。但其实我心里是希望有人紧着我的，特别是在开学后的几个月里，我期待着你每天都来看我，在注意到数字攀升后，我就像是服下了强效镇定剂，晚上裹着被子能傻乐呵好久。 [cite: 2]</p>
 
-        let boardState = [];
-        let currentPlayer = 'black';
-        let lastMove = null;
-        let tempBoardState = null;
+            [cite_start]<p>很奇怪，我明明是个自卑的小孩，跟你在一起的时候却是自信的，简直毫无缘由，看你羞怯的样子我就止不住的欢喜，用一个词来形容那应该就是春风得意了吧，嗯～春风得意～ [cite: 3]</p>
 
-        function saveBoard() {
-            if (!lastMove) {
-                return;
-            }
+            [cite_start]<p>你老是让我掉眼泪。 [cite: 4]</p>
+
+            [cite_start]<p>我还是识好的，知道你宠我，虽然表面上很严厉，但内里藏着柔情。这种柔情我很喜欢。 [cite: 5]</p>
+
+            [cite_start]<p>我的兴趣爱好不多，看看书，听听音乐，偶尔出门看看风景，回家看看球赛，再就是翻你的动态有没有更新了。 [cite: 6]</p>
+
+            [cite_start]<p>在你拉黑了我的spotify之后，我还是很难过的。解解的小说搁置了很长一段时间没有去读，一直到十月才捡起来，说实话文笔是欠点火候的，不曾想它能让我看哭好几次。书里的一些情节，爱凡给秋准备的那些跟我的想法其实不谋而合，之前微信起名叫秋单纯是比较符合我当时的心境，送你的礼物我很早就已经想清楚了，那首解解的画也是我早年第一次听就想给以后喜欢的人弹的曲子，所以说这本启示路让我想把礼物准备好的心更坚定了些。你看呀，围绕着我们之间的巧合居然能有这么多，但我仍不敢说天父的心意是什么，我只知道我喜欢你。在这里要跟你说声抱歉，labubu的嘴线有点歪，向日葵的挂链因为钩到清早脑子犯迷糊也缝歪了。字竟然也写歪了，一直都是小学生字体，所以我就不爱写东西，英文还勉强能看，可作为中国人，你过生日我要是还写英文那像什么话嘛，于是硬着头皮断断续续练了半个月的书法，写到后面不停地打抖一着急就写歪了。画是照着描的，不然我得画一辈子了。曲子弹得也没有很流畅，反正要给你赔个不是！这些画画，钢琴，练字，都是我小时候没坚持下来的，因为你，我愿意去尝试了，恳请你不要嫌弃。 [cite: 7]</p>
             
-            boardState = tempBoardState;
-            localStorage.setItem('goBoardState', JSON.stringify(boardState));
-            
-            currentPlayer = currentPlayer === 'black' ? 'white' : 'black';
-            localStorage.setItem('goCurrentPlayer', currentPlayer);
-            
-            lastMove = null;
-            tempBoardState = null;
-            updateStatus();
-            drawBoard();
-        }
+            [cite_start]<p>其实在你发那条朋友圈之前我就找到你的spotify账号了，当时你关注了bjugrass，我就猜到是你啦，我可是在众多Tricy里面翻了好久呢！ [cite: 8]</p>
 
-        function loadBoard() {
-            const savedState = localStorage.getItem('goBoardState');
-            const savedPlayer = localStorage.getItem('goCurrentPlayer');
-            if (savedState) {
-                boardState = JSON.parse(savedState);
-                currentPlayer = savedPlayer || 'black';
-            } else {
-                boardState = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null));
-            }
-            updateStatus();
-            drawBoard();
-        }
+            [cite_start]<p>实在不知道Irene的生日也在11月。给她包裹时不好空手，就买了本书以表谢意，后面知晓后心里也是不好受，又补了一份礼物。感觉她不太待见我，我真的认真道歉了。你生日马上就要到了，曲子还没弹熟练，我实在没时间处理这些情绪了，就把她微信删了。做得有点过分了，肿么办。我是真想跟她成为好朋友的。 [cite: 9]</p>
 
-        function drawBoard() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.strokeStyle = '#000';
-            ctx.lineWidth = 1;
+            [cite_start]<p>这个网站原本是要设计出来跟你下围棋的，当然也想写点什么给你。借助强大的AI，我已经把棋盘，落子逻辑什么的都弄好了，可惜数据只能储存在本地，需要更高深的编程技能才能实现用户在云端的互动。实在是术业有专攻，有点难为我了。不过围棋我也是刚开始学，也就只能下下局部的对杀hh。这里放一个外网平台的链接，你看心情决定要不要跟我玩：<a href="https://online-go.com/welcome/?linked-challenge=3uJPaSsyUpLNGtUuMLfnA2" target="_blank">https://online-go.com/welcome/?linked-challenge=3uJPaSsyUpLNGtUuMLfnA2</a> [cite: 10]</p>
 
-            for (let i = 0; i < GRID_SIZE; i++) {
-                ctx.beginPath();
-                ctx.moveTo(PADDING + i * CELL_SIZE, PADDING);
-                ctx.lineTo(PADDING + i * CELL_SIZE, canvas.height - PADDING);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(PADDING, PADDING + i * CELL_SIZE);
-                ctx.lineTo(canvas.width - PADDING, PADDING + i * CELL_SIZE);
-                ctx.stroke();
-            }
+            [cite_start]<p>不多说了，免得惹你厌烦。再者就是，有些话，需要见到你才能说出口，不然宁可烂在肚子里好了。 [cite: 11]</p>
 
-            const starPoints = [[3, 3], [3, 9], [3, 15], [9, 3], [9, 9], [9, 15], [15, 3], [15, 9], [15, 15]];
-            ctx.fillStyle = '#000';
-            starPoints.forEach(([x, y]) => {
-                ctx.beginPath();
-                ctx.arc(PADDING + x * CELL_SIZE, PADDING + y * CELL_SIZE, 3, 0, 2 * Math.PI);
-                ctx.fill();
-            });
+            [cite_start]<p class="question-title">最后，我有问题要问你： [cite: 12]</p>
 
-            const stateToDraw = tempBoardState || boardState;
+            [cite_start]<p class="question">“如果完美之存在于虚拟世界，你会爱真实的我吗？” [cite: 13]</p>
 
-            for (let y = 0; y < GRID_SIZE; y++) {
-                for (let x = 0; x < GRID_SIZE; x++) {
-                    const stone = stateToDraw[y][x];
-                    if (stone) {
-                        ctx.beginPath();
-                        ctx.arc(PADDING + x * CELL_SIZE, PADDING + y * CELL_SIZE, CELL_SIZE / 2 - 2, 0, 2 * Math.PI);
-                        ctx.fillStyle = stone === 'black' ? '#000' : '#fff';
-                        ctx.fill();
-                        ctx.strokeStyle = '#333';
-                        ctx.lineWidth = 1;
-                        ctx.stroke();
-                    }
-                }
-            }
-
-            if (lastMove) {
-                const [x, y] = lastMove;
-                ctx.beginPath();
-                ctx.arc(PADDING + x * CELL_SIZE, PADDING + y * CELL_SIZE, CELL_SIZE / 2 - 2, 0, 2 * Math.PI);
-                ctx.fillStyle = currentPlayer === 'black' ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.7)';
-                ctx.fill();
-                ctx.strokeStyle = '#333';
-                ctx.lineWidth = 1;
-                ctx.stroke();
-            }
-        }
-
-        function handleBoardClick(event) {
-            const rect = canvas.getBoundingClientRect();
-            const mouseX = event.clientX - rect.left - PADDING;
-            const mouseY = event.clientY - rect.top - PADDING;
-            
-            const x = Math.round(mouseX / CELL_SIZE);
-            const y = Math.round(mouseY / CELL_SIZE);
-
-            if (x >= 0 && x < GRID_SIZE && y >= 0 && y < GRID_SIZE) {
-                if (boardState[y][x] !== null) {
-                    return;
-                }
-                
-                const testBoard = JSON.parse(JSON.stringify(boardState));
-                testBoard[y][x] = currentPlayer;
-                
-                const capturedStones = captureStones(testBoard, x, y);
-
-                if (capturedStones.length === 0 && !hasLiberties(testBoard, x, y, currentPlayer)) {
-                    alert("非法落子！不能下自杀手。");
-                    lastMove = null;
-                    tempBoardState = null;
-                    drawBoard();
-                    return;
-                }
-
-                lastMove = [x, y];
-                tempBoardState = testBoard;
-                drawBoard();
-            }
-        }
-
-        function getNeighbors(x, y) {
-            const neighbors = [];
-            if (x > 0) neighbors.push([x - 1, y]);
-            if (x < GRID_SIZE - 1) neighbors.push([x + 1, y]);
-            if (y > 0) neighbors.push([x, y - 1]);
-            if (y < GRID_SIZE - 1) neighbors.push([x, y + 1]);
-            return neighbors;
-        }
-
-        function getGroup(testBoard, x, y, color, visited) {
-            const group = [];
-            const stack = [[x, y]];
-            visited[y][x] = true;
-
-            while (stack.length > 0) {
-                const [curX, curY] = stack.pop();
-                group.push([curX, curY]);
-                const neighbors = getNeighbors(curX, curY);
-
-                for (const [nx, ny] of neighbors) {
-                    if (testBoard[ny][nx] === color && !visited[ny][nx]) {
-                        visited[ny][nx] = true;
-                        stack.push([nx, ny]);
-                    }
-                }
-            }
-            return group;
-        }
-        
-        function hasLiberties(testBoard, x, y, color) {
-            const visited = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false));
-            const group = getGroup(testBoard, x, y, color, visited);
-
-            for (const [gx, gy] of group) {
-                const neighbors = getNeighbors(gx, gy);
-                for (const [nx, ny] of neighbors) {
-                    if (testBoard[ny][nx] === null) {
-                        return true;
-                    }
-                }
-            }
-            return false;
-        }
-
-        function captureStones(testBoard, x, y) {
-            const captured = [];
-            const opponentColor = (testBoard[y][x] === 'black') ? 'white' : 'black';
-            const neighbors = getNeighbors(x, y);
-
-            for (const [nx, ny] of neighbors) {
-                if (testBoard[ny][nx] === opponentColor) {
-                    if (!hasLiberties(testBoard, nx, ny, opponentColor)) {
-                        const visited = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(false));
-                        const groupToCapture = getGroup(testBoard, nx, ny, opponentColor, visited);
-                        for (const [cx, cy] of groupToCapture) {
-                            testBoard[cy][cx] = null;
-                            captured.push([cx, cy]);
-                        }
-                    }
-                }
-            }
-            return captured;
-        }
-
-        function updateStatus() {
-            statusDiv.textContent = `当前执子：${currentPlayer === 'black' ? '黑子' : '白子'}`;
-        }
-
-        function resetBoard() {
-            boardState = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null));
-            currentPlayer = 'black';
-            lastMove = null;
-            tempBoardState = null;
-            
-            localStorage.setItem('goBoardState', JSON.stringify(boardState));
-            localStorage.setItem('goCurrentPlayer', currentPlayer);
-
-            drawBoard();
-            updateStatus();
-        }
-
-        canvas.addEventListener('click', handleBoardClick);
-        confirmBtn.addEventListener('click', saveBoard);
-        resignBtn.addEventListener('click', resetBoard);
-
-        window.onload = loadBoard;
-    </script>
-
+            [cite_start]<p class="signature">生日快乐。 [cite: 14]</p>
+        </section>
+    </main>
+    
 </body>
 </html>
